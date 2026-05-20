@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>多设备互通 钟表学习统计系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
+html,body{height:100%;background:#f7f9fc;}
+.container{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px;gap:20px;}
+.hide{display:none !important;}
+.title{font-size:28px;color:#222;font-weight:bold;text-align:center;}
+.btn{padding:10px 20px;font-size:16px;border:none;border-radius:8px;background:#1976d2;color:white;cursor:pointer;font-weight:bold;}
+.btn:hover{background:#1565c0;}
+.score-board{position:fixed;top:20px;right:20px;background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);font-size:18px;font-weight:bold;color:#d32f2f;}
+.login-wrap{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:9999;}
+.login-box{background:#fff;padding:40px;border-radius:15px;width:400px;text-align:center;}
+.login-title{font-size:24px;margin-bottom:20px;color:#1976d2;}
+.login-input{width:100%;padding:12px;margin:10px 0;border:2px solid #ddd;border-radius:8px;font-size:16px;}
+.login-btn{width:100%;margin-top:20px;background:#43a047;}
+.teacher-panel{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9998;display:none;justify-content:center;align-items:center;}
+.panel-box{background:#fff;padding:30px;border-radius:15px;width:90%;max-height:85vh;overflow-y:auto;}
+.panel-title{font-size:24px;margin-bottom:20px;color:#d32f2f;text-align:center;}
+.student-list{width:100%;border-collapse:collapse;margin-top:10px;}
+.student-list th,.student-list td{border:1px solid #ddd;padding:12px;text-align:center;font-size:15px;}
+.student-list th{background:#e3f2fd;color:#0d47a1;}
+.activity-wrap{width:100%;max-width:1200px;}
+.time-rate-container{display:flex;flex-direction:row;align-items:flex-start;gap:20px;padding:10px;flex-wrap:wrap;}
+.clock-area{flex:1;min-width:380px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.task-area{flex:1;min-width:380px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
+.time-box{display:none;gap:20px;align-items:center;}
+.info-num{font-size:32px;font-weight:bold;color:#1976d2;background:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);}
+.info-text{font-size:28px;font-weight:bold;color:#388e3c;background:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);}
+.clock{width:460px;height:460px;border:8px solid #333;border-radius:50%;background:#fff;position:relative;box-shadow:0 0 15px rgba(0,0,0,0.15);margin:10px auto;}
+.center{width:18px;height:18px;background:#333;border-radius:50%;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;}
+.mark{position:absolute;left:50%;top:0;width:2px;height:12px;background:#888;transform-origin:center 230px;}
+.mark.big{height:26px;background:#000;width:4px;}
+.number{position:absolute;width:40px;height:40px;text-align:center;line-height:40px;font-size:26px;font-weight:bold;color:#222;}
+.min-label{position:absolute;font-size:16px;color:#d32f2f;font-weight:bold;display:none;}
+.hand{position:absolute;left:50%;bottom:50%;transform-origin:center bottom;border-radius:6px;transform:translateX(-50%);background:#000;z-index:9;}
+.hour{width:10px;height:115px;}
+.minute{width:4px;height:190px;}
+.panel{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.student-btn{background:#43a047;}
+.disp-time-btn{background:#7b1fa2;}
+.disp-mark-btn{background:#c2185b;}
+.submit-btn{background:#f57c00;}
+.task-title{font-size:22px;font-weight:bold;color:#0d47a1;margin-bottom:15px;text-align:center;background:#e3f2fd;padding:10px;border-radius:8px;}
+.question{font-size:18px;line-height:2;margin:10px 0;}
+.blank{display:inline-block;width:60px;height:32px;line-height:32px;border-bottom:2px solid #333;text-align:center;font-weight:bold;color:#d32f2f;margin:0 4px;}
+.drag-options{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0;justify-content:center;}
+.drag-item{padding:8px 14px;background:#1976d2;color:white;border-radius:6px;cursor:grab;user-select:none;font-weight:bold;}
+.result-board{background:#fff8e1;padding:12px;border-radius:10px;font-size:18px;font-weight:bold;color:#f57c00;border:2px solid #ffb74d;margin-top:15px;display:none;text-align:center;}
+.whole-time-container{display:flex;flex-direction:row;align-items:flex-start;gap:20px;padding:10px;flex-wrap:wrap;}
+.time-btn{background:#7b1fa2;}
+.repair-clock-container{width:100%;display:flex;flex-direction:column;align-items:center;}
+.info{font-size:18px;margin:8px 0;color:#333;}
+.btnBox{margin:25px 0;display:flex;gap:15px;justify-content:center;flex-wrap:wrap;}
+.gameBtn{padding:12px 25px;font-size:17px;border:none;border-radius:8px;cursor:pointer;color:#fff;}
+#startBtn{background:#28a745;}
+#nextBtn{background:#007bff;}
+#timeBtn{background:#ffc107;color:#333;}
+.gameBtn:disabled{background:#ccc;cursor:not-allowed;}
+.clockWrap{position:relative;width:340px;height:340px;margin:20px auto;}
+.repair-clock{width:100%;height:100%;border:12px solid #d92b2b;border-radius:50%;background:#fff;position:relative;}
+.dot{width:16px;height:16px;background:#222;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;}
+.num{position:absolute;font-size:26px;font-weight:bold;color:#222;width:40px;height:40px;line-height:40px;text-align:center;}
+.n12{top:10px;left:50%;transform:translateX(-50%);}
+.n1{top:35px;right:65px;}
+.n2{top:85px;right:35px;}
+.n3{top:50%;right:10px;transform:translateY(-50%);}
+.n4{bottom:85px;right:35px;}
+.n5{bottom:35px;right:65px;}
+.n6{bottom:10px;left:50%;transform:translateX(-50%);}
+.n7{bottom:35px;left:65px;}
+.n8{bottom:85px;left:35px;}
+.n9{top:50%;left:10px;transform:translateY(-50%);}
+.n10{top:85px;left:35px;}
+.n11{top:35px;left:65px;}
+.repair-hand{position:absolute;left:50%;bottom:50%;transform-origin:center bottom;border-radius:10px;display:none;}
+.repair-hour{width:8px;height:90px;background:#e63939;margin-left:-4px;z-index:5;}
+.repair-minute{width:6px;height:130px;background:#28c76f;margin-left:-3px;z-index:4;}
+.dragBox{max-width:420px;margin:20px auto;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;padding:10px;}
+.dragItem{padding:10px 20px;background:#e8f0fe;border-radius:8px;font-size:22px;font-weight:bold;touch-action:none;user-select:none;}
+.flag{position:absolute;font-size:40px;font-weight:bold;pointer-events:none;z-index:20;}
+.right{color:green;}
+.wrong{color:red;}
+.passTip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;color:#28a745;font-weight:bold;display:none;z-index:30;}
+.timeTip{font-size:22px;color:#d92b2b;margin-top:15px;}
+.activity-nav{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap;justify-content:center;}
+.nav-btn{background:#007bff;}
+.nav-btn.active{background:#28a745;}
+.final-submit{background: #e53935;font-size: 20px;padding: 12px 30px;margin: 10px 0;box-shadow: 0 4px 8px rgba(0,0,0,0.2);}
+.final-submit:hover{background: #c62828;}
+.result-modal{position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.7);display: flex;justify-content: center;align-items: center;z-index: 99999;}
+.modal-box{background: white;padding: 40px;border-radius: 20px;text-align: center;width: 420px;box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
+.modal-title{font-size: 26px;font-weight: bold;color: #d32f2f;margin-bottom: 20px;}
+.total-score{font-size: 48px;font-weight: bold;color: #1976d2;margin: 10px 0;}
+.stars{font-size: 40px;margin: 20px 0;color: #ffc107;}
+.tip{font-size: 20px;margin: 10px 0;font-weight: bold;}
+.close-btn{margin-top: 20px;background: #1976d2;padding: 10px 25px;font-size: 18px;}
+</style>
+</head>
+<body>
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-title">钟表学习系统 - 学生登录</div>
+    <input type="text" class="login-input" id="stuName" placeholder="请输入姓名">
+    <input type="text" class="login-input" id="stuCode" placeholder="请输入3位数字学号">
+    <button class="btn login-btn" id="loginBtn">登录开始学习</button>
+    <button class="btn" style="margin-top:10px;background:#d32f2f;" id="teacherEntry">教师后台入口</button>
+  </div>
+</div>
+
+<div class="teacher-panel" id="teacherPanel">
+  <div class="panel-box">
+    <div class="panel-title">全班学生学习实时统计</div>
+    <table class="student-list">
+      <thead>
+        <tr>
+          <th>姓名</th>
+          <th>学号</th>
+          <th>时分进率</th>
+          <th>整时活动</th>
+          <th>修钟表游戏</th>
+          <th>总分</th>
+          <th>完成状态</th>
+        </tr>
+      </thead>
+      <tbody id="studentTbody"></tbody>
+    </table>
+    <button class="btn" style="margin-top:20px;" id="clearAllBtn">清空全班数据</button>
+    <button class="btn" style="margin-top:20px;margin-left:10px;background:#666;" id="closeTeacherPanel">关闭后台</button>
+  </div>
+</div>
+
+<div class="score-board" id="scoreBoard" class="hide">当前得分：<span id="totalScore">0</span>/100</div>
+
+<div class="container" id="mainContainer" class="hide">
+  <h2 class="title">钟表综合学习活动</h2>
+  <button class="btn final-submit" id="finalSubmitBtn">✅ 提交最终成绩</button>
+  <div class="activity-nav">
+    <button class="btn nav-btn active" data-act="timeRate">时分进率</button>
+    <button class="btn nav-btn" data-act="wholeTime">整时活动</button>
+    <button class="btn nav-btn" data-act="repairClock">修钟表游戏</button>
+  </div>
+
+  <div class="activity-wrap time-rate-container" id="timeRateActivity">
+    <div class="clock-area">
+      <div class="title">⏰ 时分进率探究</div>
+      <div class="time-box" id="timeBox1">
+        <div class="info-num" id="numText1">12:00</div>
+        <div class="info-text" id="wordText1">12时</div>
+      </div>
+      <div class="clock" id="clock1"></div>
+      <div class="panel">
+        <button id="step1">分针走1格</button>
+        <button id="stepBig1">分针走1大格</button>
+        <button id="nextHour1" class="student-btn">分针走一圈</button>
+        <button id="auto1">自动演示</button>
+        <button id="reset1">重置</button>
+        <button id="toggleTimeDisp1" class="disp-time-btn">显示时间面板</button>
+        <button id="toggleMinMark1" class="disp-mark-btn">显示刻度几分</button>
+      </div>
+    </div>
+    <div class="task-area">
+      <div class="task-title">探究任务（拖动答案填空）</div>
+      <div class="question">
+        1. 分针走1小格是（<span class="blank" id="b1"></span>）分。<br>
+        　分针走1大格是（<span class="blank" id="b2"></span>）分。<br>
+        　分针从12走到3，走了（<span class="blank" id="b3"></span>）大格，走（<span class="blank" id="b4"></span>）分。<br>
+        　分针走1圈是（<span class="blank" id="b5"></span>）分；<br>
+        　时针走1大格是（<span class="blank" id="b6"></span>）时。
+      </div>
+      <div class="question">
+        2. 我发现：<br>
+        　时针走1大格，分针正好走（<span class="blank" id="b7"></span>）圈，<br>
+        　是（<span class="blank" id="b8"></span>）个小格，也就是（<span class="blank" id="b9"></span>）分。<br>
+        　所以 1时 =（<span class="blank" id="b10"></span>）分。<br>
+        　时用字母h表示，分用字母min表示，<br>
+        　1h =（<span class="blank" id="b11"></span>）min。
+      </div>
+      <div class="drag-options">
+        <div class="drag-item" draggable="true">1</div>
+        <div class="drag-item" draggable="true">3</div>
+        <div class="drag-item" draggable="true">5</div>
+        <div class="drag-item" draggable="true">15</div>
+        <div class="drag-item" draggable="true">60</div>
+      </div>
+      <div style="text-align:center;">
+        <button class="submit-btn" id="submitAns1">提交答案</button>
+      </div>
+      <div class="result-board" id="resultBoard1">✅ 答案正确：1时 = 60分，1h = 60min</div>
+    </div>
+  </div>
+
+  <div class="activity-wrap whole-time-container" id="wholeTimeActivity" class="hide">
+    <div class="clock-area">
+      <div class="title">⏰ 整时专项探究</div>
+      <div class="time-box" id="timeBox2">
+        <div class="info-num" id="numText2">12:00</div>
+        <div class="info-text" id="wordText2">12时</div>
+      </div>
+      <div class="clock" id="clock2"></div>
+      <div class="panel">
+        <button id="step2">分针走1格 →</button>
+        <button id="stepBig2">分针走1大格</button>
+        <button id="nextHour2" class="student-btn">分针走一圈</button>
+        <button id="auto2">自动演示</button>
+        <button id="reset2">重置</button>
+        <button id="toggleTime2" class="time-btn">显示时间</button>
+      </div>
+    </div>
+    <div class="task-area">
+      <div class="task-title">整时探究任务（拖动答案填空）</div>
+      <div class="question">
+        1. 钟面上一共有（<span class="blank" id="b12"></span>）个整时。
+      </div>
+      <div class="question">
+        2. （<span class="blank" id="b13"></span>）时，分针和时针成一条直线。
+      </div>
+      <div class="question">
+        3. （<span class="blank" id="b14"></span>）时，分针和时针完全重叠。
+      </div>
+      <div class="drag-options">
+        <div class="drag-item" draggable="true">6</div>
+        <div class="drag-item" draggable="true">12</div>
+      </div>
+      <div style="text-align:center;">
+        <button class="submit-btn" id="submitAns2">提交答案</button>
+      </div>
+      <div class="result-board" id="resultBoard2">✅ 探究答案：<br>1. 钟面上一共有 <b>12</b> 个整时<br>2. <b>6</b> 时，分针和时针成一条直线<br>3. <b>12</b> 时，分针和时针完全重叠</div>
+    </div>
+  </div>
+
+  <div class="activity-wrap repair-clock-container" id="repairClockActivity" class="hide">
+    <h2>拖拽修钟表游戏</h2>
+    <div class="info">第<span id="levTxt">0</span>关 / 共12关 &nbsp;&nbsp; 目标：<span id="timeTxt">--</span>时</div>
+    <div class="btnBox">
+      <button class="gameBtn" id="startBtn">开始游戏</button>
+      <button class="gameBtn" id="nextBtn" disabled>下一关</button>
+      <button class="gameBtn" id="timeBtn">查看用时</button>
+    </div>
+    <div class="clockWrap">
+      <div class="repair-clock" id="repairClock">
+        <div class="dot"></div>
+        <div class="repair-hand repair-hour" id="hourHand"></div>
+        <div class="repair-hand repair-minute" id="minHand"></div>
+        <div class="passTip" id="passTip">你真棒👍</div>
+      </div>
+    </div>
+    <div class="dragBox" id="dragBox"></div>
+    <div class="timeTip" id="timeTip"></div>
+  </div>
+</div>
+
+<script>
+// 全局配置
+const SCORE_CONFIG = {timeRate:30, wholeTime:30, repairClock:40};
+const CORRECT_ANSWERS1 = ['1','5','3','15','60','1','1','60','60','60','60'];
+const CORRECT_ANSWERS2 = ['12','6','12'];
+
+// 云端共享数据核心（全网同一链接自动互通）
+const DB_KEY = 'clockClassStudentData';
+function $id(id){return document.getElementById(id);}
+
+// 读写共享数据
+function getClassData(){
+  let str = localStorage.getItem(DB_KEY);
+  return str ? JSON.parse(str) : [];
+}
+function saveClassData(arr){
+  localStorage.setItem(DB_KEY, JSON.stringify(arr));
+}
+
+// 页面元素显示隐藏
+function showEl(id){$id(id).style.display = "flex";}
+function hideEl(id){$id(id).style.display = "none";}
+
+let currentStudent = {name:'', code:'', scores:{timeRate:0, wholeTime:0, repairClock:0}, total:0};
+
+// 更新总分并同步到共享库
+function refreshScore(){
+  currentStudent.total = currentStudent.scores.timeRate + currentStudent.scores.wholeTime + currentStudent.scores.repairClock;
+  $id('totalScore').textContent = currentStudent.total;
+
+  let list = getClassData();
+  let idx = list.findIndex(s => s.code === currentStudent.code);
+  if(idx > -1){
+    list[idx] = currentStudent;
+  }else{
+    list.push(currentStudent);
+  }
+  saveClassData(list);
+  renderTeacherTable();
+}
+
+// 渲染教师后台表格
+function renderTeacherTable(){
+  let list = getClassData();
+  let tbody = $id('studentTbody');
+  tbody.innerHTML = '';
+  list.forEach(stu => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${stu.name}</td>
+      <td>${stu.code}</td>
+      <td>${stu.scores.timeRate}/${SCORE_CONFIG.timeRate}</td>
+      <td>${stu.scores.wholeTime}/${SCORE_CONFIG.wholeTime}</td>
+      <td>${stu.scores.repairClock}/${SCORE_CONFIG.repairClock}</td>
+      <td>${stu.total}/100</td>
+      <td>${stu.total === 100 ? '已完成' : '进行中'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// 教师后台自动2秒全局刷新
+setInterval(()=>{
+  if($id('teacherPanel').style.display === 'flex'){
+    renderTeacherTable();
+  }
+},2000);
+
+// 清空全班数据
+$id('clearAllBtn').onclick = function(){
+  if(confirm('确定清空全班所有学生成绩数据？清空后不可恢复！')){
+    saveClassData([]);
+    renderTeacherTable();
+    alert('已清空全班数据');
+  }
+};
+
+// 最终成绩弹窗
+function showFinalResult(){
+  refreshScore();
+  let total = currentStudent.total;
+  let name = currentStudent.name || '同学';
+  let stars = total>=80?'🌟🌟🌟🌟🌟':total>=60?'🌟🌟🌟':'';
+  let tip = total>=80?'太棒了！':total>=60?'表现不错，继续努力！':'继续加油！';
+
+  let modal = document.createElement('div');
+  modal.className = 'result-modal';
+  modal.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title">学习完成！</div>
+      <div>${name}，你的最终成绩是：</div>
+      <div class="total-score">${total} 分</div>
+      <div class="stars">${stars}</div>
+      <div class="tip">${tip}</div>
+      <button class="btn close-btn">关闭</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector('.close-btn').onclick = ()=>document.body.removeChild(modal);
+}
+$id('finalSubmitBtn').onclick = showFinalResult;
+
+// 学生登录
+$id('loginBtn').onclick = function(){
+  let name = $id('stuName').value.trim();
+  let code = $id('stuCode').value.trim();
+  if(!name || !code || code.length!==3 || isNaN(code)){
+    alert('请输入姓名和3位数字学号！');
+    return;
+  }
+  let list = getClassData();
+  let exist = list.find(s => s.code === code);
+  if(exist){
+    currentStudent = exist;
+  }else{
+    currentStudent = {name, code, scores:{timeRate:0, wholeTime:0, repairClock:0}, total:0};
+  }
+  hideEl('loginWrap');
+  showEl('mainContainer');
+  showEl('scoreBoard');
+  refreshScore();
+};
+
+// 教师登录
+$id('teacherEntry').onclick = function(){
+  let pwd = prompt('请输入教师密码：123456');
+  if(pwd === '123456'){
+    showEl('teacherPanel');
+    renderTeacherTable();
+  }else{
+    alert('密码错误');
+  }
+};
+$id('closeTeacherPanel').onclick = ()=>hideEl('teacherPanel');
+
+// 活动切换
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.onclick = function(){
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    let act = this.dataset.act;
+    hideEl('timeRateActivity');
+    hideEl('wholeTimeActivity');
+    hideEl('repairClockActivity');
+    showEl(`${act}Activity`);
+  };
+});
+
+// 以下钟面、拖拽、游戏逻辑完全不变
+function initClock1(){
+  const clock = $id('clock1');
+  for(let i=0;i<60;i++){
+    let mark = document.createElement('div');
+    mark.className = 'mark' + (i%5===0 ? ' big' : '');
+    mark.style.transform = `rotate(${i*6}deg)`;
+    clock.appendChild(mark);
+  }
+  const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+  for(let i=0;i<12;i++){
+    let num = document.createElement('div');
+    num.className = 'number';
+    num.textContent = nums[i];
+    let deg = i * 30 - 90;
+    let rad = deg * Math.PI / 180;
+    let r = 190;
+    let x = 230 + r * Math.cos(rad) - 20;
+    let y = 230 + r * Math.sin(rad) - 20;
+    num.style.left = x + 'px';
+    num.style.top = y + 'px';
+    clock.appendChild(num);
+  }
+  let minLabelList = [];
+  for(let i=0;i<60;i++){
+    let label = document.createElement('div');
+    label.className = 'min-label';
+    label.textContent = `(${i}分)`;
+    let deg = i * 6 - 90;
+    let rad = deg * Math.PI / 180;
+    let r = 160;
+    let x = 230 + r * Math.cos(rad);
+    let y = 230 + r * Math.sin(rad);
+    label.style.left = x + 'px';
+    label.style.top = y + 'px';
+    clock.appendChild(label);
+    minLabelList.push(label);
+  }
+  let hour = document.createElement('div');
+  hour.className = 'hand hour';
+  clock.appendChild(hour);
+  let minute = document.createElement('div');
+  minute.className = 'hand minute';
+  clock.appendChild(minute);
+  let center = document.createElement('div');
+  center.className = 'center';
+  clock.appendChild(center);
+
+  let m=0, h=0;
+  let timer=null, isAnimating=false;
+  let timeDispShow = false;
+  let minMarkShow = false;
+
+  function refreshMinLabel(){
+    minLabelList.forEach(lab => lab.style.display = 'none');
+    if(!minMarkShow) return;
+    minLabelList[m].style.display = 'block';
+  }
+  function formatNumStr(h,m){
+    let currH = h === 0 ? 12 : h;
+    if(m === 60){ currH = (currH % 12) + 1; m = 0; }
+    let ms = m < 10 ? '0' + m : m;
+    return `${currH}:${ms}`;
+  }
+  function formatWordStr(h,m){
+    let currH = h === 0 ? 12 : h;
+    if(m === 60){ currH = (currH % 12) + 1; m = 0; }
+    return m === 0 ? `${currH}时` : `${currH}时${m}分`;
+  }
+  function update(){
+    minute.style.transform = `translateX(-50%) rotate(${m*6}deg)`;
+    hour.style.transform = `translateX(-50%) rotate(${h*30 + m*0.5}deg)`;
+    $id('numText1').textContent = formatNumStr(h,m);
+    $id('wordText1').textContent = formatWordStr(h,m);
+    refreshMinLabel();
+  }
+  function toggleTimeDisp(){
+    timeDispShow = !timeDispShow;
+    $id('timeBox1').style.display = timeDispShow ? 'flex' : 'none';
+    $id('toggleTimeDisp1').textContent = timeDispShow ? '隐藏时间面板' : '显示时间面板';
+  }
+  function toggleMinMark(){
+    minMarkShow = !minMarkShow;
+    $id('toggleMinMark1').textContent = minMarkShow ? '隐藏刻度几分' : '显示刻度几分';
+    refreshMinLabel();
+  }
+
+  $id('step1').onclick = function(){if(isAnimating)return;m++;if(m>=60){m=0;h=(h+1)%12;}update();};
+  $id('stepBig1').onclick = function(){if(isAnimating)return;m+=5;if(m>=60){m-=60;h=(h+1)%12;}update();};
+  $id('nextHour1').onclick = async function(){
+    if(isAnimating)return;isAnimating=true;
+    if(timer){clearInterval(timer);timer=null;$id('auto1').textContent='自动演示';}
+    m=0;update();
+    for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,70));m++;update();}
+    h=(h+1)%12;m=0;update();isAnimating=false;
+  };
+  $id('auto1').onclick = function(){
+    if(isAnimating)return;let btn=this;
+    if(timer){clearInterval(timer);timer=null;btn.textContent='自动演示';}
+    else{timer=setInterval(()=>{m++;if(m>=60){m=0;h=(h+1)%12;}update();},120);btn.textContent='暂停';}
+  };
+  $id('reset1').onclick = function(){
+    clearInterval(timer);timer=null;isAnimating=false;m=0;h=0;update();
+    $id('resultBoard1').style.display='none';$id('auto1').textContent='自动演示';
+    document.querySelectorAll('#timeRateActivity .blank').forEach(b=>b.textContent='');
+  };
+  $id('toggleTimeDisp1').onclick = toggleTimeDisp;
+  $id('toggleMinMark1').onclick = toggleMinMark;
+
+  const blanks = document.querySelectorAll('#timeRateActivity .blank');
+  const dragItems = document.querySelectorAll('#timeRateActivity .drag-item');
+  dragItems.forEach(item=>{
+    item.ondragstart = e=>e.dataTransfer.setData('text', item.textContent);
+  });
+  blanks.forEach(b=>{
+    b.ondragover = e=>e.preventDefault();
+    b.ondrop = e=>{e.preventDefault();b.textContent = e.dataTransfer.getData('text');};
+  });
+
+  $id('submitAns1').onclick = function(){
+    $id('resultBoard1').style.display = 'block';
+    let correct = 0;
+    blanks.forEach((b,i)=>{if(b.textContent===CORRECT_ANSWERS1[i])correct++;});
+    let score = Math.round((correct/CORRECT_ANSWERS1.length)*SCORE_CONFIG.timeRate);
+    currentStudent.scores.timeRate = score;
+    refreshScore();
+  };
+  update();
+}
+
+function initClock2(){
+  const clock = $id('clock2');
+  for(let i=0;i<60;i++){
+    let mark = document.createElement('div');
+    mark.className = 'mark' + (i%5===0 ? ' big' : '');
+    mark.style.transform = `rotate(${i*6}deg)`;
+    clock.appendChild(mark);
+  }
+  const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+  for(let i=0;i<12;i++){
+    let num = document.createElement('div');
+    num.className = 'number';
+    num.textContent = nums[i];
+    let deg = i * 30 - 90;
+    let rad = deg * Math.PI / 180;
+    let r = 190;
+    let x = 230 + r * Math.cos(rad) - 20;
+    let y = 230 + r * Math.sin(rad) - 20;
+    num.style.left = x + 'px';
+    num.style.top = y + 'px';
+    clock.appendChild(num);
+  }
+  let hour = document.createElement('div');
+  hour.className = 'hand hour';
+  clock.appendChild(hour);
+  let minute = document.createElement('div');
+  minute.className = 'hand minute';
+  clock.appendChild(minute);
+  let center = document.createElement('div');
+  center.className = 'center';
+  clock.appendChild(center);
+
+  let m=0, h=0;
+  let timer=null, isAnimating=false;
+  let timeShow = false;
+
+  function formatNumStr(h,m){
+    let sh = h===0?12:h;
+    let ms = m<10?'0'+m:m;
+    return `${sh}:${ms}`;
+  }
+  function formatWordStr(h,m){
+    let sh = h===0?12:h;
+    return m===0?`${sh}时`:`${sh}时${m}分`;
+  }
+  function update(){
+    minute.style.transform = `translateX(-50%) rotate(${m*6}deg)`;
+    hour.style.transform = `translateX(-50%) rotate(${h*30 + m*0.5}deg)`;
+    $id('numText2').textContent = formatNumStr(h,m);
+    $id('wordText2').textContent = formatWordStr(h,m);
+  }
+
+  $id('step2').onclick = function(){if(isAnimating)return;m++;if(m>=60){m=0;h=(h+1)%12;}update();};
+  $id('stepBig2').onclick = function(){if(isAnimating)return;m+=5;if(m>=60){m-=60;h=(h+1)%12;}update();};
+  $id('nextHour2').onclick = async function(){
+    if(isAnimating)return;isAnimating=true;
+    if(timer){clearInterval(timer);timer=null;$id('auto2').textContent='自动演示';}
+    m=0;update();
+    for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,70));m++;update();}
+    h=(h+1)%12;m=0;update();isAnimating=false;
+  };
+  $id('auto2').onclick = function(){
+    if(isAnimating)return;let btn=this;
+    if(timer){clearInterval(timer);timer=null;btn.textContent='自动演示';}
+    else{timer=setInterval(()=>{m++;if(m>=60){m=0;h=(h+1)%12;}update();},120);btn.textContent='暂停';}
+  };
+  $id('reset2').onclick = function(){
+    clearInterval(timer);timer=null;isAnimating=false;m=0;h=0;update();
+    $id('resultBoard2').style.display='none';$id('auto2').textContent='自动演示';
+    document.querySelectorAll('#wholeTimeActivity .blank').forEach(b=>b.textContent='');
+  };
+  $id('toggleTime2').onclick = function(){
+    timeShow = !timeShow;
+    $id('timeBox2').style.display = timeShow ? 'flex' : 'none';
+    $id('toggleTime2').textContent = timeShow ? '隐藏时间' : '显示时间';
+  };
+
+  const blanks = document.querySelectorAll('#wholeTimeActivity .blank');
+  const dragItems = document.querySelectorAll('#wholeTimeActivity .drag-item');
+  dragItems.forEach(item=>{
+    item.ondragstart = e=>e.dataTransfer.setData('text', item.textContent);
+  });
+  blanks.forEach(b=>{
+    b.ondragover = e=>e.preventDefault();
+    b.ondrop = e=>{e.preventDefault();b.textContent = e.dataTransfer.getData('text');};
+  });
+
+  $id('submitAns2').onclick = function(){
+    $id('resultBoard2').style.display = 'block';
+    let correct = 0;
+    blanks.forEach((b,i)=>{if(b.textContent===CORRECT_ANSWERS2[i])correct++;});
+    currentStudent.scores.wholeTime = correct * 10;
+    refreshScore();
+  };
+  update();
+}
+
+function initRepairClock(){
+  let gameStart = false,level = 0;
+  const maxLevel = 12;
+  let hourPool = [],targetHour = 1;
+  let missNums = [];
+  let fixNumSet = new Set();
+  let fixHour = false,fixMin = false;
+  let startTime = 0;
+  let errorCount = 0;
+
+  const startBtn = $id('startBtn');
+  const nextBtn = $id('nextBtn');
+  const timeBtn = $id('timeBtn');
+  const levTxt = $id('levTxt');
+  const timeTxt = $id('timeTxt');
+  const passTip = $id('passTip');
+  const timeTip = $id('timeTip');
+  const clock = $id('repairClock');
+  const hourHand = $id('hourHand');
+  const minHand = $id('minHand');
+  const dragBox = $id('dragBox');
+
+  startBtn.onclick = function(){
+    gameStart = true;level = 0;startTime = Date.now();timeTip.innerText = '';
+    hourPool = shuffle([1,2,3,4,5,6,7,8,9,10,11,12]);
+    errorCount = 0;currentStudent.scores.repairClock = 0;refreshScore();
+    nextLevel();nextBtn.disabled = true;
+  };
+  nextBtn.onclick = function(){nextLevel();nextBtn.disabled = true;};
+  timeBtn.onclick = function(){
+    if(!gameStart){timeTip.innerText='请先点击开始游戏';return;}
+    let use = Math.floor((Date.now()-startTime)/1000);
+    let m = Math.floor(use/60),s=use%60;
+    timeTip.innerText = `已用时：${m}分${s}秒`;
+  };
+
+  function nextLevel(){
+    level++;passTip.style.display='none';
+    if(level>maxLevel){
+      let use = Math.floor((Date.now()-startTime)/1000);
+      let m = Math.floor(use/60),s=use%60;
+      timeTip.innerText = `恭喜通关！总用时：${m}分${s}秒`;
+      let score = Math.max(0, 40 - (errorCount * 2));
+      currentStudent.scores.repairClock = score;
+      refreshScore();
+      gameStart=false;return;
+    }
+    targetHour = hourPool[level-1];
+    levTxt.innerText=level;timeTxt.innerText=targetHour;
+    fixNumSet.clear();fixHour=false;fixMin=false;
+    hourHand.style.display='none';minHand.style.display='none';
+    clock.querySelectorAll('.num,.flag').forEach(el=>el.remove());
+    dragBox.innerHTML='';
+
+    let allNums = [1,2,3,4,5,6,7,8,9,10,11,12];
+    missNums = shuffle([...allNums]).slice(0,3);
+    allNums.forEach(n=>{if(!missNums.includes(n))addClockNum(n);});
+    createDragItems();
+  }
+  function shuffle(arr){
+    let a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+      let j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function addClockNum(n){
+    let d=document.createElement('div');
+    d.className='num n'+n;d.innerText=n;clock.appendChild(d);
+  }
+  function createDragItems(){
+    missNums.forEach(n=>{
+      let item=document.createElement('div');
+      item.className='dragItem';item.innerText=n;
+      item.dataset.type='num';item.dataset.val=n;
+      initDrag(item);dragBox.appendChild(item);
+    });
+    let h=document.createElement('div');
+    h.className='dragItem';h.innerText='时针';
+    h.dataset.type='hourTxt';initDrag(h);dragBox.appendChild(h);
+    let m=document.createElement('div');
+    m.className='dragItem';m.innerText='分针';
+    m.dataset.type='minTxt';initDrag(m);dragBox.appendChild(m);
+  }
+  function initDrag(el){
+    let sx,sy,ox,oy,isdrag=false;
+    el.onmousedown=start;
+    el.ontouchstart=e=>{e.preventDefault();start(e.touches[0]);};
+    function start(e){
+      isdrag=true;sx=e.clientX;sy=e.clientY;
+      ox=el.offsetLeft;oy=el.offsetTop;
+      el.style.zIndex=999;el.style.position='absolute';
+      document.addEventListener('mousemove',move);
+      document.addEventListener('mouseup',end);
+      document.addEventListener('touchmove',tmove);
+      document.addEventListener('touchend',end);
+    }
+    function move(e){
+      if(!isdrag)return;
+      let dx=e.clientX-sx,dy=e.clientY-sy;
+      el.style.left=ox+dx+'px';el.style.top=oy+dy+'px';
+    }
+    function tmove(e){if(!isdrag)return;move(e.touches[0]);}
+    function end(){
+      isdrag=false;
+      document.removeEventListener('mousemove',move);
+      document.removeEventListener('mouseup',end);
+      document.removeEventListener('touchmove',tmove);
+      document.removeEventListener('touchend',end);
+      checkDrop(el);
+    }
+  }
+  function checkDrop(el){
+    let type=el.dataset.type;
+    let rect=clock.getBoundingClientRect();
+    let r=el.getBoundingClientRect();
+    let ex=r.left+r.width/2,ey=r.top+r.height/2;
+    let near=getNearNum(ex,ey);
+
+    if(type==='num'){
+      let v=parseInt(el.dataset.val);
+      if(near===v){addClockNum(v);fixNumSet.add(v);showFlag(el,true);el.remove();}
+      else{showFlag(el,false);resetItem(el);errorCount++;}
+    }else if(type==='hourTxt'){
+      if(near===targetHour){
+        hourHand.style.display='block';
+        hourHand.style.transform=`rotate(${targetHour*30}deg)`;
+        fixHour=true;showFlag(el,true);el.remove();
+      }else{showFlag(el,false);resetItem(el);errorCount++;}
+    }else if(type==='minTxt'){
+      if(near===12){
+        minHand.style.display='block';
+        minHand.style.transform='rotate(0deg)';
+        fixMin=true;showFlag(el,true);el.remove();
+      }else{showFlag(el,false);resetItem(el);errorCount++;}
+    }
+    setTimeout(checkOK,300);
+  }
+  function getNearNum(x,y){
+    let pos={
+      12:[170,30],1:[260,60],2:[305,110],3:[320,170],
+      4:[305,230],5:[260,280],6:[170,310],7:[80,280],
+      8:[35,230],9:[20,170],10:[35,110],11:[80,60]
+    };
+    let cr=clock.getBoundingClientRect();
+    let min=9999,res=12;
+    for(let n in pos){
+      let nx=cr.left+pos[n][0],ny=cr.top+pos[n][1];
+      let d=Math.hypot(x-nx,y-ny);
+      if(d<min){min=d;res=parseInt(n);}
+    }
+    return res;
+  }
+  function showFlag(el,ok){
+    let f=document.createElement('div');
+    f.className='flag '+(ok?'right':'wrong');
+    f.innerText=ok?'✓':'❌';
+    let r=el.getBoundingClientRect(),cr=clock.getBoundingClientRect();
+    f.style.left=(r.left-cr.left)+'px';
+    f.style.top=(r.top-cr.top)+'px';
+    clock.appendChild(f);
+    setTimeout(()=>f.remove(),1200);
+  }
+  function resetItem(el){
+    el.style.position='';el.style.left='';el.style.top='';
+  }
+  function checkOK(){
+    let ok = missNums.every(n=>fixNumSet.has(n));
+    if(ok && fixHour && fixMin){
+      passTip.style.display='block';
+      nextBtn.disabled=false;
+    }
+  }
+}
+
+window.onload = function(){
+  initClock1();initClock2();initRepairClock();
+};
+</script>
+</body>
+</html>
