@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>多设备互通 钟表学习统计系统</title>
+<title>钟表综合学习系统（整合版）</title>
 <style>
+/* 通用样式 */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
 html,body{height:100%;background:#f7f9fc;}
 .container{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px;gap:20px;}
@@ -12,22 +13,92 @@ html,body{height:100%;background:#f7f9fc;}
 .title{font-size:28px;color:#222;font-weight:bold;text-align:center;}
 .btn{padding:10px 20px;font-size:16px;border:none;border-radius:8px;background:#1976d2;color:white;cursor:pointer;font-weight:bold;}
 .btn:hover{background:#1565c0;}
-.score-board{position:fixed;top:20px;right:20px;background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);font-size:18px;font-weight:bold;color:#d32f2f;}
+.score-board{position:fixed;top:20px;right:20px;background:#fff;padding:15px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.1);font-size:18px;font-weight:bold;color:#d32f2f;z-index:999;}
+
+/* 登录界面 */
 .login-wrap{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:9999;}
 .login-box{background:#fff;padding:40px;border-radius:15px;width:400px;text-align:center;}
 .login-title{font-size:24px;margin-bottom:20px;color:#1976d2;}
 .login-input{width:100%;padding:12px;margin:10px 0;border:2px solid #ddd;border-radius:8px;font-size:16px;}
 .login-btn{width:100%;margin-top:20px;background:#43a047;}
-.teacher-panel{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9998;display:none;justify-content:center;align-items:center;}
-.panel-box{background:#fff;padding:30px;border-radius:15px;width:90%;max-height:85vh;overflow-y:auto;}
+
+/* 教师后台 */
+.teacher-panel{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  z-index:9998;
+  display:none;
+  overflow-y:auto;
+  padding:20px;
+}
+.panel-box{
+  background:#fff;
+  padding:30px;
+  border-radius:15px;
+  width:95%;
+  max-width:1400px;
+  margin:0 auto;
+  max-height:90vh;
+  overflow-y:auto;
+}
 .panel-title{font-size:24px;margin-bottom:20px;color:#d32f2f;text-align:center;}
-.student-list{width:100%;border-collapse:collapse;margin-top:10px;}
-.student-list th,.student-list td{border:1px solid #ddd;padding:12px;text-align:center;font-size:15px;}
+
+/* 筛选导出区域 */
+.filter-export-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.filter-input {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  width: 250px;
+}
+.export-btn {background:#2e7d32;}
+.chart-btn {background:#8e24aa;}
+
+/* 图表 */
+.chart-container {
+  width: 100%;
+  height: 400px;
+  margin: 20px 0;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  display: none;
+}
+
+/* 表格 */
+.student-list{width:100%;border-collapse:collapse;margin-top:10px;margin-bottom:30px;}
+.student-list th,.student-list td{border:1px solid #ddd;padding:12px;text-align:center;}
 .student-list th{background:#e3f2fd;color:#0d47a1;}
+.question-detail-wrap{margin:20px 0;}
+.detail-title{font-size:20px;font-weight:bold;color:#1976d2;margin:15px 0;padding-bottom:5px;border-bottom:2px solid #e3f2fd;}
+.question-table{width:100%;border-collapse:collapse;margin:10px 0;}
+.question-table th,.question-table td{border:1px solid #ddd;padding:10px;text-align:center;}
+.question-table th{background:#f1f8e9;color:#388e3c;font-size:16px;}
+.correct{color:green;font-weight:bold;}
+.incorrect{color:red;font-weight:bold;}
+.unanswered{color:#999;font-weight:bold;}
+
+/* 活动样式 */
+.activity-nav{display:flex;gap:10px;margin:20px 0;}
+.nav-btn{background:#007bff;}
+.nav-btn.active{background:#28a745;}
 .activity-wrap{width:100%;max-width:1200px;}
-.time-rate-container{display:flex;flex-direction:row;align-items:flex-start;gap:20px;padding:10px;flex-wrap:wrap;}
-.clock-area{flex:1;min-width:380px;display:flex;flex-direction:column;align-items:center;gap:10px;}
-.task-area{flex:1;min-width:380px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
+.time-rate-container{display:flex;flex-direction:row;align-items:flex-start;gap:20px;padding:10px;}
+.clock-area{width:50%;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.task-area{width:50%;background:#fff;border-radius:12px;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
 .time-box{display:none;gap:20px;align-items:center;}
 .info-num{font-size:32px;font-weight:bold;color:#1976d2;background:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);}
 .info-text{font-size:28px;font-weight:bold;color:#388e3c;background:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);}
@@ -51,7 +122,7 @@ html,body{height:100%;background:#f7f9fc;}
 .drag-options{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0;justify-content:center;}
 .drag-item{padding:8px 14px;background:#1976d2;color:white;border-radius:6px;cursor:grab;user-select:none;font-weight:bold;}
 .result-board{background:#fff8e1;padding:12px;border-radius:10px;font-size:18px;font-weight:bold;color:#f57c00;border:2px solid #ffb74d;margin-top:15px;display:none;text-align:center;}
-.whole-time-container{display:flex;flex-direction:row;align-items:flex-start;gap:20px;padding:10px;flex-wrap:wrap;}
+.whole-time-container{display:flex;flex-direction:row;align-items:flex-start;gap:20px;padding:10px;}
 .time-btn{background:#7b1fa2;}
 .repair-clock-container{width:100%;display:flex;flex-direction:column;align-items:center;}
 .info{font-size:18px;margin:8px 0;color:#333;}
@@ -84,59 +155,92 @@ html,body{height:100%;background:#f7f9fc;}
 .dragItem{padding:10px 20px;background:#e8f0fe;border-radius:8px;font-size:22px;font-weight:bold;touch-action:none;user-select:none;}
 .flag{position:absolute;font-size:40px;font-weight:bold;pointer-events:none;z-index:20;}
 .right{color:green;}
-.wrong{color:red;}
+.wrong{color:red;font-weight:bold;}
 .passTip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;color:#28a745;font-weight:bold;display:none;z-index:30;}
 .timeTip{font-size:22px;color:#d92b2b;margin-top:15px;}
-.activity-nav{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap;justify-content:center;}
-.nav-btn{background:#007bff;}
-.nav-btn.active{background:#28a745;}
-.final-submit{background: #e53935;font-size: 20px;padding: 12px 30px;margin: 10px 0;box-shadow: 0 4px 8px rgba(0,0,0,0.2);}
-.final-submit:hover{background: #c62828;}
-.result-modal{position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.7);display: flex;justify-content: center;align-items: center;z-index: 99999;}
-.modal-box{background: white;padding: 40px;border-radius: 20px;text-align: center;width: 420px;box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
-.modal-title{font-size: 26px;font-weight: bold;color: #d32f2f;margin-bottom: 20px;}
-.total-score{font-size: 48px;font-weight: bold;color: #1976d2;margin: 10px 0;}
-.stars{font-size: 40px;margin: 20px 0;color: #ffc107;}
-.tip{font-size: 20px;margin: 10px 0;font-weight: bold;}
-.close-btn{margin-top: 20px;background: #1976d2;padding: 10px 25px;font-size: 18px;}
+
+.final-submit{background:#e53935;font-size:20px;padding:12px 30px;margin:10px 0;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
+.final-submit:hover{background:#c62828;}
+.result-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:99999;}
+.modal-box{background:white;padding:40px;border-radius:20px;text-align:center;width:420px;box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+.modal-title{font-size:26px;font-weight:bold;color:#d32f2f;margin-bottom:20px;}
+.total-score{font-size:48px;font-weight:bold;color:#1976d2;margin:10px 0;}
+.stars{font-size:40px;margin:20px 0;color:#ffc107;}
+.tip{font-size:20px;margin:10px 0;font-weight:bold;}
+.close-btn{margin-top:20px;background:#1976d2;padding:10px 25px;font-size:18px;}
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
 </head>
 <body>
+
+<!-- 登录 -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-box">
     <div class="login-title">钟表学习系统 - 学生登录</div>
     <input type="text" class="login-input" id="stuName" placeholder="请输入姓名">
-    <input type="text" class="login-input" id="stuCode" placeholder="请输入3位数字学号">
+    <input type="password" class="login-input" id="stuCode" placeholder="请输入三码（数字）">
     <button class="btn login-btn" id="loginBtn">登录开始学习</button>
     <button class="btn" style="margin-top:10px;background:#d32f2f;" id="teacherEntry">教师后台入口</button>
   </div>
 </div>
 
+<!-- 教师后台 -->
 <div class="teacher-panel" id="teacherPanel">
   <div class="panel-box">
-    <div class="panel-title">全班学生学习实时统计</div>
+    <div class="panel-title">学生学习情况跟踪系统</div>
+
+    <div class="filter-export-area">
+      <input type="text" class="filter-input" id="studentFilter" placeholder="输入姓名/三码筛选">
+      <div>
+        <button class="btn export-btn" id="exportExcelBtn">📤 导出Excel</button>
+        <button class="btn chart-btn" id="toggleChartBtn">📊 显示统计图表</button>
+      </div>
+    </div>
+
+    <div class="chart-container" id="chartContainer"></div>
+
     <table class="student-list">
       <thead>
         <tr>
-          <th>姓名</th>
-          <th>学号</th>
-          <th>时分进率</th>
-          <th>整时活动</th>
-          <th>修钟表游戏</th>
-          <th>总分</th>
-          <th>完成状态</th>
+          <th>姓名</th><th>三码</th><th>时分进率</th><th>整时活动</th><th>修钟表</th><th>总分</th><th>状态</th>
         </tr>
       </thead>
       <tbody id="studentTbody"></tbody>
     </table>
-    <button class="btn" style="margin-top:20px;" id="clearAllBtn">清空全班数据</button>
-    <button class="btn" style="margin-top:20px;margin-left:10px;background:#666;" id="closeTeacherPanel">关闭后台</button>
+
+    <div class="question-detail-wrap">
+      <div class="detail-title">📝 时分进率 - 小题详情</div>
+      <table class="question-table">
+        <thead><tr><th>学生</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th></tr></thead>
+        <tbody id="timeRateDetailTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="question-detail-wrap">
+      <div class="detail-title">📝 整时活动 - 小题详情</div>
+      <table class="question-table">
+        <thead><tr><th>学生</th><th>1</th><th>2</th><th>3</th></tr></thead>
+        <tbody id="wholeTimeDetailTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="question-detail-wrap">
+      <div class="detail-title">🎮 修钟表游戏 - 详情</div>
+      <table class="question-table">
+        <thead><tr><th>学生</th><th>关卡</th><th>错误</th><th>得分</th><th>用时</th></tr></thead>
+        <tbody id="repairClockDetailTbody"></tbody>
+      </table>
+    </div>
+
+    <button class="btn" style="margin-top:20px;" id="closeTeacherPanel">关闭后台</button>
   </div>
 </div>
 
-<div class="score-board" id="scoreBoard" class="hide">当前得分：<span id="totalScore">0</span>/100</div>
+<div class="score-board hide" id="scoreBoard">当前得分：<span id="totalScore">0</span>/100</div>
 
-<div class="container" id="mainContainer" class="hide">
+<div class="container hide" id="mainContainer">
   <h2 class="title">钟表综合学习活动</h2>
   <button class="btn final-submit" id="finalSubmitBtn">✅ 提交最终成绩</button>
   <div class="activity-nav">
@@ -164,7 +268,7 @@ html,body{height:100%;background:#f7f9fc;}
       </div>
     </div>
     <div class="task-area">
-      <div class="task-title">探究任务（拖动答案填空）</div>
+      <div class="task-title">探究任务</div>
       <div class="question">
         1. 分针走1小格是（<span class="blank" id="b1"></span>）分。<br>
         　分针走1大格是（<span class="blank" id="b2"></span>）分。<br>
@@ -177,7 +281,6 @@ html,body{height:100%;background:#f7f9fc;}
         　时针走1大格，分针正好走（<span class="blank" id="b7"></span>）圈，<br>
         　是（<span class="blank" id="b8"></span>）个小格，也就是（<span class="blank" id="b9"></span>）分。<br>
         　所以 1时 =（<span class="blank" id="b10"></span>）分。<br>
-        　时用字母h表示，分用字母min表示，<br>
         　1h =（<span class="blank" id="b11"></span>）min。
       </div>
       <div class="drag-options">
@@ -186,15 +289,18 @@ html,body{height:100%;background:#f7f9fc;}
         <div class="drag-item" draggable="true">5</div>
         <div class="drag-item" draggable="true">15</div>
         <div class="drag-item" draggable="true">60</div>
+        <div class="drag-item" draggable="true">1</div>
       </div>
       <div style="text-align:center;">
         <button class="submit-btn" id="submitAns1">提交答案</button>
       </div>
-      <div class="result-board" id="resultBoard1">✅ 答案正确：1时 = 60分，1h = 60min</div>
+      <div class="result-board" id="resultBoard1">
+        ✅ 答案正确：1时 = 60分，1h = 60min
+      </div>
     </div>
   </div>
 
-  <div class="activity-wrap whole-time-container" id="wholeTimeActivity" class="hide">
+  <div class="activity-wrap whole-time-container hide" id="wholeTimeActivity">
     <div class="clock-area">
       <div class="title">⏰ 整时专项探究</div>
       <div class="time-box" id="timeBox2">
@@ -212,28 +318,19 @@ html,body{height:100%;background:#f7f9fc;}
       </div>
     </div>
     <div class="task-area">
-      <div class="task-title">整时探究任务（拖动答案填空）</div>
-      <div class="question">
-        1. 钟面上一共有（<span class="blank" id="b12"></span>）个整时。
+      <div class="task-title">整时探究任务</div>
+      <div class="question">1. 钟面上一共有（<span class="blank" id="b12"></span>）个整时。</div>
+      <div class="question">2. （<span class="blank" id="b13"></span>）时，分针和时针成一条直线。</div>
+      <div class="question">3. （<span class="blank" id="b14"></span>）时，分针和时针完全重叠。</div>
+      <div class="drag-options"><div class="drag-item" draggable="true">6</div><div class="drag-item" draggable="true">12</div><div class="drag-item" draggable="true">3</div><div class="drag-item" draggable="true">9</div></div>
+      <div style="text-align:center;"><button class="submit-btn" id="submitAns2">提交答案</button></div>
+      <div class="result-board" id="resultBoard2">
+        ✅ 探究答案：<br>1. 钟面上一共有 <b>12</b> 个整时<br>2. <b>6</b> 时成直线<br>3. <b>12</b> 时重叠
       </div>
-      <div class="question">
-        2. （<span class="blank" id="b13"></span>）时，分针和时针成一条直线。
-      </div>
-      <div class="question">
-        3. （<span class="blank" id="b14"></span>）时，分针和时针完全重叠。
-      </div>
-      <div class="drag-options">
-        <div class="drag-item" draggable="true">6</div>
-        <div class="drag-item" draggable="true">12</div>
-      </div>
-      <div style="text-align:center;">
-        <button class="submit-btn" id="submitAns2">提交答案</button>
-      </div>
-      <div class="result-board" id="resultBoard2">✅ 探究答案：<br>1. 钟面上一共有 <b>12</b> 个整时<br>2. <b>6</b> 时，分针和时针成一条直线<br>3. <b>12</b> 时，分针和时针完全重叠</div>
     </div>
   </div>
 
-  <div class="activity-wrap repair-clock-container" id="repairClockActivity" class="hide">
+  <div class="activity-wrap repair-clock-container hide" id="repairClockActivity">
     <h2>拖拽修钟表游戏</h2>
     <div class="info">第<span id="levTxt">0</span>关 / 共12关 &nbsp;&nbsp; 目标：<span id="timeTxt">--</span>时</div>
     <div class="btnBox">
@@ -255,558 +352,854 @@ html,body{height:100%;background:#f7f9fc;}
 </div>
 
 <script>
-// 全局配置
-const SCORE_CONFIG = {timeRate:30, wholeTime:30, repairClock:40};
-const CORRECT_ANSWERS1 = ['1','5','3','15','60','1','1','60','60','60','60'];
-const CORRECT_ANSWERS2 = ['12','6','12'];
-
-// 云端共享数据核心（全网同一链接自动互通）
-const DB_KEY = 'clockClassStudentData';
-function $id(id){return document.getElementById(id);}
-
-// 读写共享数据
-function getClassData(){
-  let str = localStorage.getItem(DB_KEY);
-  return str ? JSON.parse(str) : [];
-}
-function saveClassData(arr){
-  localStorage.setItem(DB_KEY, JSON.stringify(arr));
-}
-
-// 页面元素显示隐藏
-function showEl(id){$id(id).style.display = "flex";}
-function hideEl(id){$id(id).style.display = "none";}
-
-let currentStudent = {name:'', code:'', scores:{timeRate:0, wholeTime:0, repairClock:0}, total:0};
-
-// 更新总分并同步到共享库
-function refreshScore(){
-  currentStudent.total = currentStudent.scores.timeRate + currentStudent.scores.wholeTime + currentStudent.scores.repairClock;
-  $id('totalScore').textContent = currentStudent.total;
-
-  let list = getClassData();
-  let idx = list.findIndex(s => s.code === currentStudent.code);
-  if(idx > -1){
-    list[idx] = currentStudent;
-  }else{
-    list.push(currentStudent);
+// 全局数据存储 - 学生信息和答题数据
+let currentStudent = {
+  name:'',
+  code:'',
+  scores:{timeRate:0,wholeTime:0,repairClock:0},
+  total:0,
+  answers:{
+    timeRate:[],
+    wholeTime:[],
+    repairClock:{level:0,errorCount:0,usedTime:'',startTime:0}
   }
-  saveClassData(list);
-  renderTeacherTable();
+};
+let studentData = []; // 所有学生数据，用于教师端展示
+const SCORE_CONFIG = {timeRate:30,wholeTime:30,repairClock:40}; // 各模块分值
+const CORRECT_ANSWERS1 = ['1','5','3','15','60','1','1','60','60','60','60']; // 时分进率正确答案
+const CORRECT_ANSWERS2 = ['12','6','12']; // 整时活动正确答案
+let chartInstance = null; // 图表实例
+
+// 工具函数
+function $(id){return document.getElementById(id);}
+function show(id){$(id).style.display = 'block';}
+function hide(id){$(id).style.display = 'none';}
+
+// 更新学生得分并同步到教师端
+function updateScore(){
+  // 计算总分
+  currentStudent.total = currentStudent.scores.timeRate + currentStudent.scores.wholeTime + currentStudent.scores.repairClock;
+  // 更新学生端得分面板
+  $('totalScore').innerText = currentStudent.total;
+  // 同步更新教师端面板
+  updateTeacherPanel($('studentFilter')?.value?.trim() || '');
 }
 
-// 渲染教师后台表格
-function renderTeacherTable(){
-  let list = getClassData();
-  let tbody = $id('studentTbody');
-  tbody.innerHTML = '';
-  list.forEach(stu => {
-    let tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${stu.name}</td>
-      <td>${stu.code}</td>
-      <td>${stu.scores.timeRate}/${SCORE_CONFIG.timeRate}</td>
-      <td>${stu.scores.wholeTime}/${SCORE_CONFIG.wholeTime}</td>
-      <td>${stu.scores.repairClock}/${SCORE_CONFIG.repairClock}</td>
-      <td>${stu.total}/100</td>
-      <td>${stu.total === 100 ? '已完成' : '进行中'}</td>
-    `;
-    tbody.appendChild(tr);
+// ========== 教师端核心功能 ==========
+// 教师入口验证
+document.getElementById('teacherEntry').onclick = function(){
+  let pwd = prompt('请输入教师密码：','123456');
+  if(pwd === '123456'){
+    show('teacherPanel');
+    updateTeacherPanel();
+  } else if(pwd !== null) {
+    alert('密码错误！');
+  }
+};
+
+// 关闭教师面板
+document.getElementById('closeTeacherPanel').onclick = function(){
+  hide('teacherPanel');
+};
+
+// 学生数据筛选
+document.getElementById('studentFilter').oninput = function(){
+  updateTeacherPanel(this.value.trim());
+};
+
+// 导出Excel功能
+document.getElementById('exportExcelBtn').onclick = function(){
+  if(studentData.length===0){
+    alert('暂无学生数据可导出！');
+    return;
+  }
+  // 构造导出数据结构
+  let exportData = studentData.map(s=>({
+    姓名:s.name,
+    三码:s.code,
+    时分进率: `${s.scores.timeRate}/${SCORE_CONFIG.timeRate}`,
+    整时活动: `${s.scores.wholeTime}/${SCORE_CONFIG.wholeTime}`,
+    修钟表: `${s.scores.repairClock}/${SCORE_CONFIG.repairClock}`,
+    总分: `${s.total}/100`,
+    完成状态: s.total === 100 ? '已完成' : '未完成'
+  }));
+  // 生成Excel文件
+  let wb = XLSX.utils.book_new();
+  let ws = XLSX.utils.json_to_sheet(exportData);
+  XLSX.utils.book_append_sheet(wb,ws,'钟表学习成绩');
+  XLSX.writeFile(wb,`钟表学习成绩_${new Date().toLocaleDateString()}.xlsx`);
+};
+
+// 图表显示/隐藏切换
+document.getElementById('toggleChartBtn').onclick = function(){
+  let chartContainer = $('chartContainer');
+  if(chartContainer.style.display !== 'block'){
+    show('chartContainer');
+    this.innerText = '📊 隐藏统计图表';
+    renderScoreChart(); // 渲染图表
+  } else {
+    hide('chartContainer');
+    this.innerText = '📊 显示统计图表';
+  }
+};
+
+// 渲染成绩统计图表
+function renderScoreChart(){
+  if(studentData.length === 0){
+    alert('暂无学生数据，无法生成图表！');
+    return;
+  }
+  // 销毁已有图表
+  if(chartInstance) chartInstance.destroy();
+  
+  // 准备图表数据
+  let labels = studentData.map(s => `${s.name}(${s.code})`);
+  let timeRateScores = studentData.map(s => s.scores.timeRate);
+  let wholeTimeScores = studentData.map(s => s.scores.wholeTime);
+  let repairClockScores = studentData.map(s => s.scores.repairClock);
+  let totalScores = studentData.map(s => s.total);
+  
+  // 创建图表
+  let ctx = $('chartContainer').getContext('2d');
+  chartInstance = new Chart(ctx,{
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: '时分进率',
+          data: timeRateScores,
+          backgroundColor: 'rgba(25, 118, 210, 0.6)',
+          borderColor: 'rgba(25, 118, 210, 1)',
+          borderWidth: 1
+        },
+        {
+          label: '整时活动',
+          data: wholeTimeScores,
+          backgroundColor: 'rgba(67, 160, 71, 0.6)',
+          borderColor: 'rgba(67, 160, 71, 1)',
+          borderWidth: 1
+        },
+        {
+          label: '修钟表游戏',
+          data: repairClockScores,
+          backgroundColor: 'rgba(245, 124, 0, 0.6)',
+          borderColor: 'rgba(245, 124, 0, 1)',
+          borderWidth: 1
+        },
+        {
+          label: '总分',
+          data: totalScores,
+          backgroundColor: 'rgba(211, 47, 47, 0.6)',
+          borderColor: 'rgba(211, 47, 47, 1)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          title: {
+            display: true,
+            text: '得分'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: '学生'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: '学生钟表学习成绩统计'
+        }
+      }
+    }
   });
 }
 
-// 教师后台自动2秒全局刷新
-setInterval(()=>{
-  if($id('teacherPanel').style.display === 'flex'){
-    renderTeacherTable();
+// 更新教师端面板数据
+function updateTeacherPanel(filter=''){
+  // 筛选学生数据
+  let filteredStudents = studentData.filter(s => {
+    return s.name.includes(filter) || s.code.includes(filter);
+  });
+
+  // 更新学生总表
+  let studentTbody = $('studentTbody');
+  studentTbody.innerHTML = '';
+  filteredStudents.forEach(student => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${student.name}</td>
+      <td>${student.code}</td>
+      <td>${student.scores.timeRate}/${SCORE_CONFIG.timeRate}</td>
+      <td>${student.scores.wholeTime}/${SCORE_CONFIG.wholeTime}</td>
+      <td>${student.scores.repairClock}/${SCORE_CONFIG.repairClock}</td>
+      <td>${student.total}/100</td>
+      <td>${student.total === 100 ? '<span class="correct">已完成</span>' : '<span class="unanswered">未完成</span>'}</td>
+    `;
+    studentTbody.appendChild(tr);
+  });
+
+  // 更新时分进率小题详情
+  let timeRateDetailTbody = $('timeRateDetailTbody');
+  timeRateDetailTbody.innerHTML = '';
+  filteredStudents.forEach(student => {
+    let tr = document.createElement('tr');
+    let tdHtml = `<td>${student.name}</td>`;
+    for(let i=0; i<11; i++){
+      let answer = student.answers.timeRate[i] || '';
+      if(answer === ''){
+        tdHtml += '<td class="unanswered">未答</td>';
+      } else if(answer === CORRECT_ANSWERS1[i]){
+        tdHtml += '<td class="correct">正确</td>';
+      } else {
+        tdHtml += `<td class="incorrect">错误（答：${answer}）</td>`;
+      }
+    }
+    tr.innerHTML = tdHtml;
+    timeRateDetailTbody.appendChild(tr);
+  });
+
+  // 更新整时活动小题详情
+  let wholeTimeDetailTbody = $('wholeTimeDetailTbody');
+  wholeTimeDetailTbody.innerHTML = '';
+  filteredStudents.forEach(student => {
+    let tr = document.createElement('tr');
+    let tdHtml = `<td>${student.name}</td>`;
+    for(let i=0; i<3; i++){
+      let answer = student.answers.wholeTime[i] || '';
+      if(answer === ''){
+        tdHtml += '<td class="unanswered">未答</td>';
+      } else if(answer === CORRECT_ANSWERS2[i]){
+        tdHtml += '<td class="correct">正确</td>';
+      } else {
+        tdHtml += `<td class="incorrect">错误（答：${answer}）</td>`;
+      }
+    }
+    tr.innerHTML = tdHtml;
+    wholeTimeDetailTbody.appendChild(tr);
+  });
+
+  // 更新修钟表游戏详情
+  let repairClockDetailTbody = $('repairClockDetailTbody');
+  repairClockDetailTbody.innerHTML = '';
+  filteredStudents.forEach(student => {
+    let tr = document.createElement('tr');
+    let repairData = student.answers.repairClock;
+    tr.innerHTML = `
+      <td>${student.name}</td>
+      <td>${repairData.level || 0}</td>
+      <td>${repairData.errorCount || 0}</td>
+      <td>${student.scores.repairClock}/${SCORE_CONFIG.repairClock}</td>
+      <td>${repairData.usedTime || '--'}</td>
+    `;
+    repairClockDetailTbody.appendChild(tr);
+  });
+
+  // 如果图表显示中，重新渲染图表
+  if($('chartContainer').style.display === 'block'){
+    renderScoreChart();
   }
-},2000);
-
-// 清空全班数据
-$id('clearAllBtn').onclick = function(){
-  if(confirm('确定清空全班所有学生成绩数据？清空后不可恢复！')){
-    saveClassData([]);
-    renderTeacherTable();
-    alert('已清空全班数据');
-  }
-};
-
-// 最终成绩弹窗
-function showFinalResult(){
-  refreshScore();
-  let total = currentStudent.total;
-  let name = currentStudent.name || '同学';
-  let stars = total>=80?'🌟🌟🌟🌟🌟':total>=60?'🌟🌟🌟':'';
-  let tip = total>=80?'太棒了！':total>=60?'表现不错，继续努力！':'继续加油！';
-
-  let modal = document.createElement('div');
-  modal.className = 'result-modal';
-  modal.innerHTML = `
-    <div class="modal-box">
-      <div class="modal-title">学习完成！</div>
-      <div>${name}，你的最终成绩是：</div>
-      <div class="total-score">${total} 分</div>
-      <div class="stars">${stars}</div>
-      <div class="tip">${tip}</div>
-      <button class="btn close-btn">关闭</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.querySelector('.close-btn').onclick = ()=>document.body.removeChild(modal);
 }
-$id('finalSubmitBtn').onclick = showFinalResult;
 
+// ========== 学生端核心功能 ==========
 // 学生登录
-$id('loginBtn').onclick = function(){
-  let name = $id('stuName').value.trim();
-  let code = $id('stuCode').value.trim();
-  if(!name || !code || code.length!==3 || isNaN(code)){
-    alert('请输入姓名和3位数字学号！');
+$('loginBtn').onclick = function(){
+  let stuName = $('stuName').value.trim();
+  let stuCode = $('stuCode').value.trim();
+  
+  // 验证输入
+  if(!stuName){
+    alert('请输入姓名！');
     return;
   }
-  let list = getClassData();
-  let exist = list.find(s => s.code === code);
-  if(exist){
-    currentStudent = exist;
-  }else{
-    currentStudent = {name, code, scores:{timeRate:0, wholeTime:0, repairClock:0}, total:0};
+  if(stuCode.length !== 3 || isNaN(stuCode)){
+    alert('请输入3位数字的三码！');
+    return;
   }
-  hideEl('loginWrap');
-  showEl('mainContainer');
-  showEl('scoreBoard');
-  refreshScore();
+
+  // 查找已有学生或创建新学生
+  let existingStudent = studentData.find(s => s.code === stuCode);
+  if(existingStudent){
+    currentStudent = existingStudent;
+  } else {
+    currentStudent = {
+      name: stuName,
+      code: stuCode,
+      scores: {timeRate:0,wholeTime:0,repairClock:0},
+      total:0,
+      answers:{
+        timeRate:[],
+        wholeTime:[],
+        repairClock:{level:0,errorCount:0,usedTime:'',startTime:0}
+      }
+    };
+    studentData.push(currentStudent);
+  }
+
+  // 进入学习界面
+  hide('loginWrap');
+  show('mainContainer');
+  show('scoreBoard');
+  updateScore();
 };
 
-// 教师登录
-$id('teacherEntry').onclick = function(){
-  let pwd = prompt('请输入教师密码：123456');
-  if(pwd === '123456'){
-    showEl('teacherPanel');
-    renderTeacherTable();
-  }else{
-    alert('密码错误');
-  }
-};
-$id('closeTeacherPanel').onclick = ()=>hideEl('teacherPanel');
-
-// 活动切换
-document.querySelectorAll('.nav-btn').forEach(btn=>{
+// 活动切换（时分进率/整时活动/修钟表）
+document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.onclick = function(){
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    // 切换激活状态
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-    let act = this.dataset.act;
-    hideEl('timeRateActivity');
-    hideEl('wholeTimeActivity');
-    hideEl('repairClockActivity');
-    showEl(`${act}Activity`);
+    
+    // 隐藏所有活动面板，显示当前选中的
+    hide('timeRateActivity');
+    hide('wholeTimeActivity');
+    hide('repairClockActivity');
+    show(`${this.dataset.act}Activity`);
   };
 });
 
-// 以下钟面、拖拽、游戏逻辑完全不变
-function initClock1(){
-  const clock = $id('clock1');
-  for(let i=0;i<60;i++){
+// 最终提交成绩
+$('finalSubmitBtn').onclick = function(){
+  alert(`${currentStudent.name}，你的最终成绩是：${currentStudent.total}分！\n成绩已同步到教师后台。`);
+  // 强制更新教师端数据
+  updateTeacherPanel();
+};
+
+// ========== 时分进率模块 ==========
+function initTimeRateModule(){
+  let clock = $('clock1');
+  let hourHand, minuteHand;
+  let currentMinute = 0, currentHour = 0;
+
+  // 初始化钟表刻度和数字
+  for(let i=0; i<60; i++){
     let mark = document.createElement('div');
-    mark.className = 'mark' + (i%5===0 ? ' big' : '');
+    mark.className = 'mark' + (i%5 === 0 ? ' big' : '');
     mark.style.transform = `rotate(${i*6}deg)`;
     clock.appendChild(mark);
   }
-  const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
-  for(let i=0;i<12;i++){
+
+  // 初始化钟表数字
+  let nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+  for(let i=0; i<12; i++){
     let num = document.createElement('div');
     num.className = 'number';
-    num.textContent = nums[i];
-    let deg = i * 30 - 90;
-    let rad = deg * Math.PI / 180;
-    let r = 190;
-    let x = 230 + r * Math.cos(rad) - 20;
-    let y = 230 + r * Math.sin(rad) - 20;
+    num.innerText = nums[i];
+    let angle = i*30 - 90; // 角度转换
+    let radius = 190;
+    let x = 230 + radius * Math.cos(angle * Math.PI/180) - 20;
+    let y = 230 + radius * Math.sin(angle * Math.PI/180) - 20;
     num.style.left = x + 'px';
     num.style.top = y + 'px';
     clock.appendChild(num);
   }
-  let minLabelList = [];
-  for(let i=0;i<60;i++){
-    let label = document.createElement('div');
-    label.className = 'min-label';
-    label.textContent = `(${i}分)`;
-    let deg = i * 6 - 90;
-    let rad = deg * Math.PI / 180;
-    let r = 160;
-    let x = 230 + r * Math.cos(rad);
-    let y = 230 + r * Math.sin(rad);
-    label.style.left = x + 'px';
-    label.style.top = y + 'px';
-    clock.appendChild(label);
-    minLabelList.push(label);
-  }
-  let hour = document.createElement('div');
-  hour.className = 'hand hour';
-  clock.appendChild(hour);
-  let minute = document.createElement('div');
-  minute.className = 'hand minute';
-  clock.appendChild(minute);
+
+  // 创建时针分针
+  hourHand = document.createElement('div');
+  hourHand.className = 'hand hour';
+  clock.appendChild(hourHand);
+
+  minuteHand = document.createElement('div');
+  minuteHand.className = 'hand minute';
+  clock.appendChild(minuteHand);
+
+  // 钟表中心圆点
   let center = document.createElement('div');
   center.className = 'center';
   clock.appendChild(center);
 
-  let m=0, h=0;
-  let timer=null, isAnimating=false;
-  let timeDispShow = false;
-  let minMarkShow = false;
-
-  function refreshMinLabel(){
-    minLabelList.forEach(lab => lab.style.display = 'none');
-    if(!minMarkShow) return;
-    minLabelList[m].style.display = 'block';
-  }
-  function formatNumStr(h,m){
-    let currH = h === 0 ? 12 : h;
-    if(m === 60){ currH = (currH % 12) + 1; m = 0; }
-    let ms = m < 10 ? '0' + m : m;
-    return `${currH}:${ms}`;
-  }
-  function formatWordStr(h,m){
-    let currH = h === 0 ? 12 : h;
-    if(m === 60){ currH = (currH % 12) + 1; m = 0; }
-    return m === 0 ? `${currH}时` : `${currH}时${m}分`;
-  }
-  function update(){
-    minute.style.transform = `translateX(-50%) rotate(${m*6}deg)`;
-    hour.style.transform = `translateX(-50%) rotate(${h*30 + m*0.5}deg)`;
-    $id('numText1').textContent = formatNumStr(h,m);
-    $id('wordText1').textContent = formatWordStr(h,m);
-    refreshMinLabel();
-  }
-  function toggleTimeDisp(){
-    timeDispShow = !timeDispShow;
-    $id('timeBox1').style.display = timeDispShow ? 'flex' : 'none';
-    $id('toggleTimeDisp1').textContent = timeDispShow ? '隐藏时间面板' : '显示时间面板';
-  }
-  function toggleMinMark(){
-    minMarkShow = !minMarkShow;
-    $id('toggleMinMark1').textContent = minMarkShow ? '隐藏刻度几分' : '显示刻度几分';
-    refreshMinLabel();
+  // 更新钟表指针
+  function updateClockHands(){
+    minuteHand.style.transform = `translateX(-50%) rotate(${currentMinute*6}deg)`;
+    hourHand.style.transform = `translateX(-50%) rotate(${currentHour*30 + currentMinute*0.5}deg)`;
+    // 更新时间显示面板
+    $('numText1').innerText = `${currentHour === 0 ? 12 : currentHour}:${currentMinute.toString().padStart(2, '0')}`;
+    $('wordText1').innerText = `${currentHour === 0 ? 12 : currentHour}时${currentMinute}分`;
   }
 
-  $id('step1').onclick = function(){if(isAnimating)return;m++;if(m>=60){m=0;h=(h+1)%12;}update();};
-  $id('stepBig1').onclick = function(){if(isAnimating)return;m+=5;if(m>=60){m-=60;h=(h+1)%12;}update();};
-  $id('nextHour1').onclick = async function(){
-    if(isAnimating)return;isAnimating=true;
-    if(timer){clearInterval(timer);timer=null;$id('auto1').textContent='自动演示';}
-    m=0;update();
-    for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,70));m++;update();}
-    h=(h+1)%12;m=0;update();isAnimating=false;
-  };
-  $id('auto1').onclick = function(){
-    if(isAnimating)return;let btn=this;
-    if(timer){clearInterval(timer);timer=null;btn.textContent='自动演示';}
-    else{timer=setInterval(()=>{m++;if(m>=60){m=0;h=(h+1)%12;}update();},120);btn.textContent='暂停';}
-  };
-  $id('reset1').onclick = function(){
-    clearInterval(timer);timer=null;isAnimating=false;m=0;h=0;update();
-    $id('resultBoard1').style.display='none';$id('auto1').textContent='自动演示';
-    document.querySelectorAll('#timeRateActivity .blank').forEach(b=>b.textContent='');
-  };
-  $id('toggleTimeDisp1').onclick = toggleTimeDisp;
-  $id('toggleMinMark1').onclick = toggleMinMark;
-
-  const blanks = document.querySelectorAll('#timeRateActivity .blank');
-  const dragItems = document.querySelectorAll('#timeRateActivity .drag-item');
-  dragItems.forEach(item=>{
-    item.ondragstart = e=>e.dataTransfer.setData('text', item.textContent);
-  });
-  blanks.forEach(b=>{
-    b.ondragover = e=>e.preventDefault();
-    b.ondrop = e=>{e.preventDefault();b.textContent = e.dataTransfer.getData('text');};
-  });
-
-  $id('submitAns1').onclick = function(){
-    $id('resultBoard1').style.display = 'block';
-    let correct = 0;
-    blanks.forEach((b,i)=>{if(b.textContent===CORRECT_ANSWERS1[i])correct++;});
-    let score = Math.round((correct/CORRECT_ANSWERS1.length)*SCORE_CONFIG.timeRate);
-    currentStudent.scores.timeRate = score;
-    refreshScore();
-  };
-  update();
-}
-
-function initClock2(){
-  const clock = $id('clock2');
-  for(let i=0;i<60;i++){
-    let mark = document.createElement('div');
-    mark.className = 'mark' + (i%5===0 ? ' big' : '');
-    mark.style.transform = `rotate(${i*6}deg)`;
-    clock.appendChild(mark);
-  }
-  const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
-  for(let i=0;i<12;i++){
-    let num = document.createElement('div');
-    num.className = 'number';
-    num.textContent = nums[i];
-    let deg = i * 30 - 90;
-    let rad = deg * Math.PI / 180;
-    let r = 190;
-    let x = 230 + r * Math.cos(rad) - 20;
-    let y = 230 + r * Math.sin(rad) - 20;
-    num.style.left = x + 'px';
-    num.style.top = y + 'px';
-    clock.appendChild(num);
-  }
-  let hour = document.createElement('div');
-  hour.className = 'hand hour';
-  clock.appendChild(hour);
-  let minute = document.createElement('div');
-  minute.className = 'hand minute';
-  clock.appendChild(minute);
-  let center = document.createElement('div');
-  center.className = 'center';
-  clock.appendChild(center);
-
-  let m=0, h=0;
-  let timer=null, isAnimating=false;
-  let timeShow = false;
-
-  function formatNumStr(h,m){
-    let sh = h===0?12:h;
-    let ms = m<10?'0'+m:m;
-    return `${sh}:${ms}`;
-  }
-  function formatWordStr(h,m){
-    let sh = h===0?12:h;
-    return m===0?`${sh}时`:`${sh}时${m}分`;
-  }
-  function update(){
-    minute.style.transform = `translateX(-50%) rotate(${m*6}deg)`;
-    hour.style.transform = `translateX(-50%) rotate(${h*30 + m*0.5}deg)`;
-    $id('numText2').textContent = formatNumStr(h,m);
-    $id('wordText2').textContent = formatWordStr(h,m);
-  }
-
-  $id('step2').onclick = function(){if(isAnimating)return;m++;if(m>=60){m=0;h=(h+1)%12;}update();};
-  $id('stepBig2').onclick = function(){if(isAnimating)return;m+=5;if(m>=60){m-=60;h=(h+1)%12;}update();};
-  $id('nextHour2').onclick = async function(){
-    if(isAnimating)return;isAnimating=true;
-    if(timer){clearInterval(timer);timer=null;$id('auto2').textContent='自动演示';}
-    m=0;update();
-    for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,70));m++;update();}
-    h=(h+1)%12;m=0;update();isAnimating=false;
-  };
-  $id('auto2').onclick = function(){
-    if(isAnimating)return;let btn=this;
-    if(timer){clearInterval(timer);timer=null;btn.textContent='自动演示';}
-    else{timer=setInterval(()=>{m++;if(m>=60){m=0;h=(h+1)%12;}update();},120);btn.textContent='暂停';}
-  };
-  $id('reset2').onclick = function(){
-    clearInterval(timer);timer=null;isAnimating=false;m=0;h=0;update();
-    $id('resultBoard2').style.display='none';$id('auto2').textContent='自动演示';
-    document.querySelectorAll('#wholeTimeActivity .blank').forEach(b=>b.textContent='');
-  };
-  $id('toggleTime2').onclick = function(){
-    timeShow = !timeShow;
-    $id('timeBox2').style.display = timeShow ? 'flex' : 'none';
-    $id('toggleTime2').textContent = timeShow ? '隐藏时间' : '显示时间';
-  };
-
-  const blanks = document.querySelectorAll('#wholeTimeActivity .blank');
-  const dragItems = document.querySelectorAll('#wholeTimeActivity .drag-item');
-  dragItems.forEach(item=>{
-    item.ondragstart = e=>e.dataTransfer.setData('text', item.textContent);
-  });
-  blanks.forEach(b=>{
-    b.ondragover = e=>e.preventDefault();
-    b.ondrop = e=>{e.preventDefault();b.textContent = e.dataTransfer.getData('text');};
-  });
-
-  $id('submitAns2').onclick = function(){
-    $id('resultBoard2').style.display = 'block';
-    let correct = 0;
-    blanks.forEach((b,i)=>{if(b.textContent===CORRECT_ANSWERS2[i])correct++;});
-    currentStudent.scores.wholeTime = correct * 10;
-    refreshScore();
-  };
-  update();
-}
-
-function initRepairClock(){
-  let gameStart = false,level = 0;
-  const maxLevel = 12;
-  let hourPool = [],targetHour = 1;
-  let missNums = [];
-  let fixNumSet = new Set();
-  let fixHour = false,fixMin = false;
-  let startTime = 0;
-  let errorCount = 0;
-
-  const startBtn = $id('startBtn');
-  const nextBtn = $id('nextBtn');
-  const timeBtn = $id('timeBtn');
-  const levTxt = $id('levTxt');
-  const timeTxt = $id('timeTxt');
-  const passTip = $id('passTip');
-  const timeTip = $id('timeTip');
-  const clock = $id('repairClock');
-  const hourHand = $id('hourHand');
-  const minHand = $id('minHand');
-  const dragBox = $id('dragBox');
-
-  startBtn.onclick = function(){
-    gameStart = true;level = 0;startTime = Date.now();timeTip.innerText = '';
-    hourPool = shuffle([1,2,3,4,5,6,7,8,9,10,11,12]);
-    errorCount = 0;currentStudent.scores.repairClock = 0;refreshScore();
-    nextLevel();nextBtn.disabled = true;
-  };
-  nextBtn.onclick = function(){nextLevel();nextBtn.disabled = true;};
-  timeBtn.onclick = function(){
-    if(!gameStart){timeTip.innerText='请先点击开始游戏';return;}
-    let use = Math.floor((Date.now()-startTime)/1000);
-    let m = Math.floor(use/60),s=use%60;
-    timeTip.innerText = `已用时：${m}分${s}秒`;
-  };
-
-  function nextLevel(){
-    level++;passTip.style.display='none';
-    if(level>maxLevel){
-      let use = Math.floor((Date.now()-startTime)/1000);
-      let m = Math.floor(use/60),s=use%60;
-      timeTip.innerText = `恭喜通关！总用时：${m}分${s}秒`;
-      let score = Math.max(0, 40 - (errorCount * 2));
-      currentStudent.scores.repairClock = score;
-      refreshScore();
-      gameStart=false;return;
+  // 绑定钟表操作按钮
+  $('step1').onclick = () => {
+    currentMinute++;
+    if(currentMinute >= 60){
+      currentMinute = 0;
+      currentHour = (currentHour + 1) % 12;
     }
-    targetHour = hourPool[level-1];
-    levTxt.innerText=level;timeTxt.innerText=targetHour;
-    fixNumSet.clear();fixHour=false;fixMin=false;
-    hourHand.style.display='none';minHand.style.display='none';
-    clock.querySelectorAll('.num,.flag').forEach(el=>el.remove());
-    dragBox.innerHTML='';
+    updateClockHands();
+  };
 
-    let allNums = [1,2,3,4,5,6,7,8,9,10,11,12];
-    missNums = shuffle([...allNums]).slice(0,3);
-    allNums.forEach(n=>{if(!missNums.includes(n))addClockNum(n);});
-    createDragItems();
-  }
-  function shuffle(arr){
-    let a=[...arr];
-    for(let i=a.length-1;i>0;i--){
-      let j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
+  $('stepBig1').onclick = () => {
+    currentMinute += 5;
+    if(currentMinute >= 60){
+      currentMinute -= 60;
+      currentHour = (currentHour + 1) % 12;
     }
-    return a;
-  }
-  function addClockNum(n){
-    let d=document.createElement('div');
-    d.className='num n'+n;d.innerText=n;clock.appendChild(d);
-  }
-  function createDragItems(){
-    missNums.forEach(n=>{
-      let item=document.createElement('div');
-      item.className='dragItem';item.innerText=n;
-      item.dataset.type='num';item.dataset.val=n;
-      initDrag(item);dragBox.appendChild(item);
-    });
-    let h=document.createElement('div');
-    h.className='dragItem';h.innerText='时针';
-    h.dataset.type='hourTxt';initDrag(h);dragBox.appendChild(h);
-    let m=document.createElement('div');
-    m.className='dragItem';m.innerText='分针';
-    m.dataset.type='minTxt';initDrag(m);dragBox.appendChild(m);
-  }
-  function initDrag(el){
-    let sx,sy,ox,oy,isdrag=false;
-    el.onmousedown=start;
-    el.ontouchstart=e=>{e.preventDefault();start(e.touches[0]);};
-    function start(e){
-      isdrag=true;sx=e.clientX;sy=e.clientY;
-      ox=el.offsetLeft;oy=el.offsetTop;
-      el.style.zIndex=999;el.style.position='absolute';
-      document.addEventListener('mousemove',move);
-      document.addEventListener('mouseup',end);
-      document.addEventListener('touchmove',tmove);
-      document.addEventListener('touchend',end);
-    }
-    function move(e){
-      if(!isdrag)return;
-      let dx=e.clientX-sx,dy=e.clientY-sy;
-      el.style.left=ox+dx+'px';el.style.top=oy+dy+'px';
-    }
-    function tmove(e){if(!isdrag)return;move(e.touches[0]);}
-    function end(){
-      isdrag=false;
-      document.removeEventListener('mousemove',move);
-      document.removeEventListener('mouseup',end);
-      document.removeEventListener('touchmove',tmove);
-      document.removeEventListener('touchend',end);
-      checkDrop(el);
-    }
-  }
-  function checkDrop(el){
-    let type=el.dataset.type;
-    let rect=clock.getBoundingClientRect();
-    let r=el.getBoundingClientRect();
-    let ex=r.left+r.width/2,ey=r.top+r.height/2;
-    let near=getNearNum(ex,ey);
+    updateClockHands();
+  };
 
-    if(type==='num'){
-      let v=parseInt(el.dataset.val);
-      if(near===v){addClockNum(v);fixNumSet.add(v);showFlag(el,true);el.remove();}
-      else{showFlag(el,false);resetItem(el);errorCount++;}
-    }else if(type==='hourTxt'){
-      if(near===targetHour){
-        hourHand.style.display='block';
-        hourHand.style.transform=`rotate(${targetHour*30}deg)`;
-        fixHour=true;showFlag(el,true);el.remove();
-      }else{showFlag(el,false);resetItem(el);errorCount++;}
-    }else if(type==='minTxt'){
-      if(near===12){
-        minHand.style.display='block';
-        minHand.style.transform='rotate(0deg)';
-        fixMin=true;showFlag(el,true);el.remove();
-      }else{showFlag(el,false);resetItem(el);errorCount++;}
+  $('nextHour1').onclick = () => {
+    currentMinute = 0;
+    currentHour = (currentHour + 1) % 12;
+    updateClockHands();
+  };
+
+  $('auto1').onclick = function(){
+    let btn = this;
+    if(btn.dataset.running === 'true'){
+      // 停止自动演示
+      clearInterval(btn.timer);
+      btn.dataset.running = 'false';
+      btn.innerText = '自动演示';
+    } else {
+      // 开始自动演示
+      btn.dataset.running = 'true';
+      btn.innerText = '停止演示';
+      btn.timer = setInterval(() => {
+        currentMinute++;
+        if(currentMinute >= 60){
+          currentMinute = 0;
+          currentHour = (currentHour + 1) % 12;
+        }
+        updateClockHands();
+      }, 200);
     }
-    setTimeout(checkOK,300);
-  }
-  function getNearNum(x,y){
-    let pos={
-      12:[170,30],1:[260,60],2:[305,110],3:[320,170],
-      4:[305,230],5:[260,280],6:[170,310],7:[80,280],
-      8:[35,230],9:[20,170],10:[35,110],11:[80,60]
+  };
+
+  $('reset1').onclick = () => {
+    // 停止自动演示
+    if($('auto1').dataset.running === 'true'){
+      clearInterval($('auto1').timer);
+      $('auto1').dataset.running = 'false';
+      $('auto1').innerText = '自动演示';
+    }
+    currentMinute = 0;
+    currentHour = 0;
+    updateClockHands();
+  };
+
+  // 显示/隐藏时间面板
+  $('toggleTimeDisp1').onclick = function(){
+    let timeBox = $('timeBox1');
+    if(timeBox.style.display === 'flex'){
+      hide('timeBox1');
+      this.innerText = '显示时间面板';
+    } else {
+      timeBox.style.display = 'flex';
+      this.innerText = '隐藏时间面板';
+    }
+  };
+
+  // 拖拽答题功能
+  let blanks = document.querySelectorAll('#timeRateActivity .blank');
+  // 绑定拖拽开始事件
+  document.querySelectorAll('#timeRateActivity .drag-item').forEach(item => {
+    item.ondragstart = e => {
+      e.dataTransfer.setData('text', item.innerText);
     };
-    let cr=clock.getBoundingClientRect();
-    let min=9999,res=12;
-    for(let n in pos){
-      let nx=cr.left+pos[n][0],ny=cr.top+pos[n][1];
-      let d=Math.hypot(x-nx,y-ny);
-      if(d<min){min=d;res=parseInt(n);}
-    }
-    return res;
-  }
-  function showFlag(el,ok){
-    let f=document.createElement('div');
-    f.className='flag '+(ok?'right':'wrong');
-    f.innerText=ok?'✓':'❌';
-    let r=el.getBoundingClientRect(),cr=clock.getBoundingClientRect();
-    f.style.left=(r.left-cr.left)+'px';
-    f.style.top=(r.top-cr.top)+'px';
-    clock.appendChild(f);
-    setTimeout(()=>f.remove(),1200);
-  }
-  function resetItem(el){
-    el.style.position='';el.style.left='';el.style.top='';
-  }
-  function checkOK(){
-    let ok = missNums.every(n=>fixNumSet.has(n));
-    if(ok && fixHour && fixMin){
-      passTip.style.display='block';
-      nextBtn.disabled=false;
-    }
-  }
+  });
+  // 绑定拖拽放下事件
+  blanks.forEach(blank => {
+    blank.ondragover = e => e.preventDefault();
+    blank.ondrop = e => {
+      e.preventDefault();
+      blank.innerText = e.dataTransfer.getData('text');
+    };
+  });
+
+  // 提交时分进率答案
+  $('submitAns1').onclick = function(){
+    // 收集答案
+    let answers = [];
+    blanks.forEach(blank => {
+      answers.push(blank.innerText.trim());
+    });
+    currentStudent.answers.timeRate = answers;
+
+    // 计算得分
+    let correctCount = 0;
+    answers.forEach((ans, idx) => {
+      if(ans === CORRECT_ANSWERS1[idx]) correctCount++;
+    });
+    currentStudent.scores.timeRate = Math.round((correctCount / CORRECT_ANSWERS1.length) * SCORE_CONFIG.timeRate);
+    
+    // 更新得分并显示结果
+    updateScore();
+    show('resultBoard1');
+
+    // 禁用提交按钮防止重复提交
+    this.disabled = true;
+    this.style.background = '#ccc';
+  };
+
+  // 初始化钟表指针
+  updateClockHands();
 }
 
+// ========== 整时活动模块 ==========
+function initWholeTimeModule(){
+  let clock = $('clock2');
+  let hourHand, minuteHand;
+  let currentMinute = 0, currentHour = 0;
+
+  // 初始化钟表刻度和数字
+  for(let i=0; i<60; i++){
+    let mark = document.createElement('div');
+    mark.className = 'mark' + (i%5 === 0 ? ' big' : '');
+    mark.style.transform = `rotate(${i*6}deg)`;
+    clock.appendChild(mark);
+  }
+
+  // 初始化钟表数字
+  let nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+  for(let i=0; i<12; i++){
+    let num = document.createElement('div');
+    num.className = 'number';
+    num.innerText = nums[i];
+    let angle = i*30 - 90;
+    let radius = 190;
+    let x = 230 + radius * Math.cos(angle * Math.PI/180) - 20;
+    let y = 230 + radius * Math.sin(angle * Math.PI/180) - 20;
+    num.style.left = x + 'px';
+    num.style.top = y + 'px';
+    clock.appendChild(num);
+  }
+
+  // 创建时针分针
+  hourHand = document.createElement('div');
+  hourHand.className = 'hand hour';
+  clock.appendChild(hourHand);
+
+  minuteHand = document.createElement('div');
+  minuteHand.className = 'hand minute';
+  clock.appendChild(minuteHand);
+
+  // 钟表中心圆点
+  let center = document.createElement('div');
+  center.className = 'center';
+  clock.appendChild(center);
+
+  // 更新钟表指针
+  function updateClockHands(){
+    minuteHand.style.transform = `translateX(-50%) rotate(${currentMinute*6}deg)`;
+    hourHand.style.transform = `translateX(-50%) rotate(${currentHour*30 + currentMinute*0.5}deg)`;
+    // 更新时间显示面板
+    $('numText2').innerText = `${currentHour === 0 ? 12 : currentHour}:${currentMinute.toString().padStart(2, '0')}`;
+    $('wordText2').innerText = `${currentHour === 0 ? 12 : currentHour}时${currentMinute}分`;
+  }
+
+  // 绑定钟表操作按钮
+  $('step2').onclick = () => {
+    currentMinute++;
+    if(currentMinute >= 60){
+      currentMinute = 0;
+      currentHour = (currentHour + 1) % 12;
+    }
+    updateClockHands();
+  };
+
+  $('stepBig2').onclick = () => {
+    currentMinute += 5;
+    if(currentMinute >= 60){
+      currentMinute -= 60;
+      currentHour = (currentHour + 1) % 12;
+    }
+    updateClockHands();
+  };
+
+  $('nextHour2').onclick = () => {
+    currentMinute = 0;
+    currentHour = (currentHour + 1) % 12;
+    updateClockHands();
+  };
+
+  $('auto2').onclick = function(){
+    let btn = this;
+    if(btn.dataset.running === 'true'){
+      clearInterval(btn.timer);
+      btn.dataset.running = 'false';
+      btn.innerText = '自动演示';
+    } else {
+      btn.dataset.running = 'true';
+      btn.innerText = '停止演示';
+      btn.timer = setInterval(() => {
+        currentMinute++;
+        if(currentMinute >= 60){
+          currentMinute = 0;
+          currentHour = (currentHour + 1) % 12;
+        }
+        updateClockHands();
+      }, 200);
+    }
+  };
+
+  $('reset2').onclick = () => {
+    if($('auto2').dataset.running === 'true'){
+      clearInterval($('auto2').timer);
+      $('auto2').dataset.running = 'false';
+      $('auto2').innerText = '自动演示';
+    }
+    currentMinute = 0;
+    currentHour = 0;
+    updateClockHands();
+  };
+
+  // 显示/隐藏时间面板
+  $('toggleTime2').onclick = function(){
+    let timeBox = $('timeBox2');
+    if(timeBox.style.display === 'flex'){
+      hide('timeBox2');
+      this.innerText = '显示时间面板';
+    } else {
+      timeBox.style.display = 'flex';
+      this.innerText = '隐藏时间面板';
+    }
+  };
+
+  // 拖拽答题功能
+  let blanks = document.querySelectorAll('#wholeTimeActivity .blank');
+  document.querySelectorAll('#wholeTimeActivity .drag-item').forEach(item => {
+    item.ondragstart = e => {
+      e.dataTransfer.setData('text', item.innerText);
+    };
+  });
+  blanks.forEach(blank => {
+    blank.ondragover = e => e.preventDefault();
+    blank.ondrop = e => {
+      e.preventDefault();
+      blank.innerText = e.dataTransfer.getData('text');
+    };
+  });
+
+  // 提交整时活动答案
+  $('submitAns2').onclick = function(){
+    // 收集答案
+    let answers = [];
+    blanks.forEach(blank => {
+      answers.push(blank.innerText.trim());
+    });
+    currentStudent.answers.wholeTime = answers;
+
+    // 计算得分
+    let correctCount = 0;
+    answers.forEach((ans, idx) => {
+      if(ans === CORRECT_ANSWERS2[idx]) correctCount++;
+    });
+    currentStudent.scores.wholeTime = correctCount * 10; // 每题10分
+    
+    // 更新得分并显示结果
+    updateScore();
+    show('resultBoard2');
+
+    // 禁用提交按钮
+    this.disabled = true;
+    this.style.background = '#ccc';
+  };
+
+  // 初始化钟表指针
+  updateClockHands();
+}
+
+// ========== 修钟表游戏模块 ==========
+function initRepairClockModule(){
+  let currentLevel = 0; // 当前关卡
+  let maxLevel = 12; // 最大关卡
+  let errorCount = 0; // 错误次数
+  let gameStartTime = 0; // 游戏开始时间
+  let targetHour = 0; // 目标小时
+  let isDragging = false; // 是否正在拖拽
+
+  // 获取DOM元素
+  let levTxt = $('levTxt');
+  let timeTxt = $('timeTxt');
+  let startBtn = $('startBtn');
+  let nextBtn = $('nextBtn');
+  let timeBtn = $('timeBtn');
+  let hourHand = $('hourHand');
+  let minHand = $('minHand');
+  let passTip = $('passTip');
+  let dragBox = $('dragBox');
+  let timeTip = $('timeTip');
+  let repairClock = $('repairClock');
+
+  // 初始化钟表数字（固定位置）
+  function initClockNumbers(){
+    const numbers = ['n12','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11'];
+    numbers.forEach(cls => {
+      let num = document.createElement('div');
+      num.className = `num ${cls}`;
+      num.innerText = cls.replace('n','');
+      repairClock.appendChild(num);
+    });
+  }
+
+  // 生成拖拽数字
+  function generateDragItems(){
+    dragBox.innerHTML = '';
+    // 生成1-12的数字拖拽项
+    for(let i=1; i<=12; i++){
+      let item = document.createElement('div');
+      item.className = 'dragItem';
+      item.innerText = i;
+      item.dataset.value = i;
+      // 绑定拖拽事件
+      item.addEventListener('mousedown', startDrag);
+      item.addEventListener('touchstart', startDrag, {passive: true});
+      dragBox.appendChild(item);
+    }
+  }
+
+  // 开始拖拽
+  function startDrag(e){
+    isDragging = true;
+    let target = e.target || e.touches[0].target;
+    let value = parseInt(target.dataset.value);
+    
+    // 鼠标/触摸移动事件
+    function moveHandler(e){
+      if(!isDragging) return;
+      e.preventDefault();
+      // 获取鼠标/触摸位置
+      let x = e.clientX || e.touches[0].clientX;
+      let y = e.clientY || e.touches[0].clientY;
+      // 转换为钟表内的角度
+      let rect = repairClock.getBoundingClientRect();
+      let centerX = rect.left + rect.width/2;
+      let centerY = rect.top + rect.height/2;
+      let angle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI + 90;
+      if(angle < 0) angle += 360;
+      
+      // 更新时针角度
+      hourHand.style.transform = `rotate(${angle}deg)`;
+      hourHand.dataset.current = value;
+      show('hourHand');
+      show('minHand'); // 分针固定在12点
+      minHand.style.transform = 'rotate(90deg)';
+    }
+
+    // 结束拖拽
+    function endHandler(){
+      isDragging = false;
+      document.removeEventListener('mousemove', moveHandler);
+      document.removeEventListener('touchmove', moveHandler);
+      document.removeEventListener('mouseup', endHandler);
+      document.removeEventListener('touchend', endHandler);
+      
+      // 验证答案
+      let currentValue = parseInt(hourHand.dataset.current || 0);
+      if(currentValue === targetHour){
+        // 答题正确
+        hide(timeTip);
+        show(passTip);
+        setTimeout(() => hide(passTip), 1500);
+        nextBtn.disabled = false;
+        startBtn.disabled = true;
+      } else {
+        // 答题错误
+        errorCount++;
+        currentStudent.answers.repairClock.errorCount = errorCount;
+        timeTip.innerText = `错误！正确答案是${targetHour}时，已错${errorCount}次`;
+        show(timeTip);
+      }
+      // 更新得分和教师端数据
+      updateRepairClockScore();
+    }
+
+    // 绑定移动和结束事件
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('touchmove', moveHandler, {passive: false});
+    document.addEventListener('mouseup', endHandler);
+    document.addEventListener('touchend', endHandler);
+  }
+
+  // 更新修钟表游戏得分
+  function updateRepairClockScore(){
+    // 基础得分40分，错误一次扣2分，最低0分
+    let score = Math.max(0, 40 - (errorCount * 2));
+    currentStudent.scores.repairClock = score;
+    currentStudent.answers.repairClock.level = currentLevel;
+    currentStudent.answers.repairClock.errorCount = errorCount;
+    // 计算用时
+    if(gameStartTime > 0){
+      let usedTime = Math.floor((Date.now() - gameStartTime) / 1000);
+      currentStudent.answers.repairClock.usedTime = `${usedTime}秒`;
+    }
+    updateScore();
+  }
+
+  // 进入下一关
+  function nextLevel(){
+    currentLevel++;
+    if(currentLevel > maxLevel){
+      // 游戏完成
+      alert('恭喜你完成所有关卡！');
+      updateRepairClockScore();
+      startBtn.disabled = true;
+      nextBtn.disabled = true;
+      return;
+    }
+
+    // 更新关卡信息
+    levTxt.innerText = currentLevel;
+    targetHour = currentLevel;
+    timeTxt.innerText = targetHour;
+    
+    // 重置UI
+    hide(passTip);
+    hide(timeTip);
+    hide(hourHand);
+    hide(minHand);
+    nextBtn.disabled = true;
+    startBtn.disabled = false;
+  }
+
+  // 开始游戏按钮
+  startBtn.onclick = function(){
+    if(currentLevel === 0) gameStartTime = Date.now(); // 记录游戏开始时间
+    currentStudent.answers.repairClock.startTime = gameStartTime;
+    nextLevel();
+  };
+
+  // 下一关按钮
+  nextBtn.onclick = nextLevel;
+
+  // 查看用时按钮
+  timeBtn.onclick = function(){
+    if(gameStartTime === 0){
+      timeTip.innerText = '还未开始游戏！';
+    } else {
+      let usedTime = Math.floor((Date.now() - gameStartTime) / 1000);
+      timeTip.innerText = `当前用时：${usedTime}秒，错误次数：${errorCount}次`;
+    }
+    show(timeTip);
+  };
+
+  // 初始化
+  initClockNumbers();
+  generateDragItems();
+  levTxt.innerText = currentLevel;
+  timeTxt.innerText = '--';
+}
+
+// ========== 页面加载初始化 ==========
 window.onload = function(){
-  initClock1();initClock2();initRepairClock();
+  initTimeRateModule();
+  initWholeTimeModule();
+  initRepairClockModule();
+  
+  // 初始化教师端筛选框
+  $('studentFilter').value = '';
 };
 </script>
 </body>
