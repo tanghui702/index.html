@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时分秒&钟面认识 - 教学评一体化系统</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
+  html,body{height:100%;background:#f7f9fc;}
+  
+  /* 整体布局 */
+  .main-container{max-width:1200px;margin:0 auto;padding:20px;}
+  .role-box{display:flex;gap:20px;justify-content:center;margin-bottom:30px;}
+  .role-btn{padding:12px 30px;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
+  .tea-btn{background:#3498db;color:#fff;}
+  .stu-btn{background:#27ae60;color:#fff;}
+  .hide{display:none;}
+
+  /* 钟面通用样式 */
+  .clock-area{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+  }
+  .title{
+    font-size:28px;
+    color:#222;
+    font-weight:bold;
+    text-align:center;
+  }
+  .clock{
+    width:460px;
+    height:460px;
+    border:8px solid #333;
+    border-radius:50%;
+    background:#fff;
+    position:relative;
+    box-shadow:0 0 15px rgba(0,0,0,0.15);
+    margin:10px auto;
+  }
+  .center{
+    width:18px;
+    height:18px;
+    background:#333;
+    border-radius:50%;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    z-index:10;
+  }
+  .mark{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:2px;
+    height:12px;
+    background:#888;
+    transform-origin:center 230px;
+  }
+  .mark.big{
+    height:26px;
+    background:#000;
+    width:4px;
+  }
+  .number{
+    position:absolute;
+    width:40px;
+    height:40px;
+    text-align:center;
+    line-height:40px;
+    font-size:26px;
+    font-weight:bold;
+    color:#222;
+  }
+  .min-label,.sec-label{
+    position:absolute;
+    font-size:16px;
+    font-weight:bold;
+    display:none;
+  }
+  .min-label{color:#d32f2f;}
+  .sec-label{color:#f44336;}
+  .hand{
+    position:absolute;
+    left:50%;
+    bottom:50%;
+    transform-origin:center bottom;
+    border-radius:6px;
+    transform:translateX(-50%);
+    z-index:9;
+  }
+  .hour{width:10px;height:115px;background:#000;}
+  .minute{width:4px;height:190px;background:#333;}
+  .second{width:2px;height:210px;background:#f44336;}
+  .panel{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  button{
+    padding:10px 16px;
+    font-size:15px;
+    border:none;
+    border-radius:8px;
+    background:#1976d2;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+  }
+  button:hover{background:#1565c0}
+  .disp-mark-btn{background:#c2185b;}
+  .disp-sec-btn{background:#f44336;}
+
+  /* 学生端样式 */
+  .stu-panel{
+    display:flex;
+    gap:20px;
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+  }
+  .task-area{
+    width:50%;
+    padding:20px;
+    border-radius:12px;
+    background:#f9f9f9;
+  }
+  .task-title{
+    font-size:22px;
+    font-weight:bold;
+    color:#0d47a1;
+    margin-bottom:15px;
+    text-align:center;
+    background:#e3f2fd;
+    padding:10px;
+    border-radius:8px;
+  }
+  .question{
+    font-size:18px;
+    line-height:2;
+    margin:10px 0;
+  }
+  .blank{
+    display:inline-block;
+    width:70px;
+    height:32px;
+    line-height:32px;
+    border-bottom:2px solid #333;
+    text-align:center;
+    font-weight:bold;
+    color:#d32f2f;
+    margin:0 4px;
+  }
+  .drag-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:20px 0;
+    justify-content:center;
+  }
+  .drag-item{
+    padding:8px 14px;
+    background:#1976d2;
+    color:white;
+    border-radius:6px;
+    cursor:grab;
+    user-select:none;
+    font-weight:bold;
+  }
+  .submit-btn{background:#f57c00;margin-top:10px;}
+  .result-board{
+    background:#fff8e1;
+    padding:12px;
+    border-radius:10px;
+    font-size:18px;
+    font-weight:bold;
+    color:#f57c00;
+    border:2px solid #ffb74d;
+    margin-top:15px;
+    display:none;
+    text-align:center;
+  }
+  .q-item{margin:15px 0;padding:10px;border-bottom:1px #eee dashed;}
+  label{margin-right:12px;cursor:pointer;}
+  .stu-info{margin-bottom:15px;}
+  .stu-info input{padding:8px;border:1px solid #ddd;border-radius:4px;width:200px;}
+
+  /* 教师端样式 */
+  .tea-panel{
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+  }
+  .tea-title{
+    font-size:24px;
+    font-weight:bold;
+    color:#2c3e50;
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .stat-box{
+    display:flex;
+    gap:30px;
+    margin-bottom:20px;
+    padding:15px;
+    background:#f8f9fa;
+    border-radius:6px;
+    justify-content:center;
+  }
+  .stat-item{font-size:18px;font-weight:bold;color:#34495e;}
+  .stu-list{margin-top:20px;}
+  .stu-row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 10px;
+    border-bottom:1px #eee solid;
+  }
+  .stu-row.header{font-weight:bold;background:#e3f2fd;}
+  .refresh-btn{
+    background:#9b59b6;
+    display:block;
+    margin:0 auto 15px;
+  }
+  .right{color:#27ae60;}
+  .wrong{color:#e74c3c;}
+  .wait{color:#999;}
+</style>
+</head>
+<body>
+<div class="main-container">
+  <!-- 身份选择 -->
+  <div class="role-box">
+    <button class="role-btn tea-btn" onclick="showTeacher()">教师端入口</button>
+    <button class="role-btn stu-btn" onclick="showStudent()">学生端入口</button>
+  </div>
+
+  <!-- 学生端 -->
+  <div id="studentPage" class="hide">
+    <!-- 钟面&时分秒演示区 -->
+    <div class="clock-area">
+      <div class="title">⏰ 时分秒进率 & 钟面认识探究</div>
+      <div class="clock" id="clock"></div>
+      <div class="panel">
+        <button id="stepSec">秒针走1小格</button>
+        <button id="stepBigSec">秒针走1大格</button>
+        <button id="stepMin">分针走1小格</button>
+        <button id="stepBigMin">分针走1大格</button>
+        <button id="nextSec">秒针走一圈</button>
+        <button id="auto">自动演示</button>
+        <button id="reset">重置</button>
+        <button id="toggleMinMark" class="disp-mark-btn">显示刻度几分</button>
+        <button id="toggleSecMark" class="disp-sec-btn">显示刻度几秒</button>
+      </div>
+    </div>
+
+    <!-- 答题区 -->
+    <div class="stu-panel">
+      <!-- 钟面认识答题区 -->
+      <div class="task-area">
+        <div class="task-title">一、钟面认识探究题</div>
+        <div class="q-item">
+          <p>1. 钟面上一共有（）个数字</p>
+          <label><input type="radio" name="q1" value="A"> A.12</label>
+          <label><input type="radio" name="q1" value="B"> B.10</label>
+          <label><input type="radio" name="q1" value="C"> C.6</label>
+        </div>
+        <div class="q-item">
+          <p>2. 钟面上一共有（）个大格</p>
+          <label><input type="radio" name="q2" value="A"> A.12</label>
+          <label><input type="radio" name="q2" value="B"> B.60</label>
+          <label><input type="radio" name="q2" value="C"> C.5</label>
+        </div>
+        <div class="q-item">
+          <p>3. 钟面上一个大格里有（）个小格</p>
+          <label><input type="radio" name="q3" value="A"> A.5</label>
+          <label><input type="radio" name="q3" value="B"> B.6</label>
+          <label><input type="radio" name="q3" value="C"> C.12</label>
+        </div>
+        <div class="q-item">
+          <p>4. 钟面上一共有（）个小格</p>
+          <label><input type="radio" name="q4" value="A"> A.30</label>
+          <label><input type="radio" name="q4" value="B"> B.60</label>
+          <label><input type="radio" name="q4" value="C"> C.12</label>
+        </div>
+        <div class="q-item">
+          <p>5. 钟面上细细长长的是（<span class="blank" id="blank5_1"></span>）；最细最长的是（<span class="blank" id="blank5_2"></span>）针；最短最粗的是（<span class="blank" id="blank5_3"></span>）</p>
+        </div>
+        <div class="q-item">
+          <p>6. 钟面上跑得最快的是（<span class="blank" id="blank6_1"></span>）；最慢的是（<span class="blank" id="blank6_2"></span>）</p>
+        </div>
+        <div class="drag-options">
+          <div class="drag-item" draggable="true">时针</div>
+          <div class="drag-item" draggable="true">分针</div>
+          <div class="drag-item" draggable="true">秒针</div>
+        </div>
+      </div>
+
+      <!-- 时分秒进率答题区 -->
+      <div class="task-area">
+        <div class="task-title">二、时分秒进率探究题</div>
+        <div class="question">
+          1. 时针走1大格是1时，走1圈是（<span class="blank" id="t1_1"></span>）时；<br>
+           分针走1小格是1分，走1大格是（<span class="blank" id="t1_2"></span>）分，走1圈是（<span class="blank" id="t1_3"></span>）分；<br>
+           秒针走1小格是1秒，走1大格是（<span class="blank" id="t1_4"></span>）秒，走1圈是（<span class="blank" id="t1_5"></span>）秒。
+        </div>
+        <div class="question">
+          2. 我发现：<br>
+           时针走1大格，分针正好走（<span class="blank" id="t2_1"></span>）圈，是（<span class="blank" id="t2_2"></span>）小格，也就是（<span class="blank" id="t2_3"></span>）分。<br>
+           所以 1时 =（<span class="blank" id="t2_4"></span>）分；1分=（<span class="blank" id="t2_6"></span>）秒。<br>
+           时用字母h表示，分用字母min表示，秒用字母s表示 1h =（<span class="blank" id="t2_5"></span>）min，1min=（<span class="blank" id="t2_7"></span>）s。
+        </div>
+        <div class="question">
+          3. 时针从数字6到9，经过的时间是（<span class="blank" id="t3_1"></span>）时。
+        </div>
+        <div class="question">
+          4. 分针从数字6到9，经过的时间是（<span class="blank" id="t4_1"></span>）分。
+        </div>
+        <div class="question">
+          5. 秒针从数字6到9，经过的时间是（<span class="blank" id="t5_1"></span>）秒。
+        </div>
+        <div class="question">
+          6. 小丽周末起床电子钟时刻是 7：59：59，再过1秒是（<span class="blank" id="t6_1"></span>）。
+        </div>
+        <div class="drag-options">
+          <div class="drag-item" draggable="true">1</div>
+          <div class="drag-item" draggable="true">5</div>
+          <div class="drag-item" draggable="true">12</div>
+          <div class="drag-item" draggable="true">15</div>
+          <div class="drag-item" draggable="true">60</div>
+          <div class="drag-item" draggable="true">3</div>
+          <div class="drag-item" draggable="true">8:00:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学生信息+提交 -->
+    <div class="stu-info" style="text-align:center;">
+      <label>学号：</label>
+      <input type="text" id="stuId" placeholder="请输入学号">
+      <button class="submit-btn" id="submitAns" onclick="stuSubmit()">提交答案</button>
+    </div>
+    <div class="result-board" id="resultBoard">✅ 提交成功！请等待教师评阅</div>
+  </div>
+
+  <!-- 教师端 -->
+  <div id="teacherPage" class="hide tea-panel">
+    <div class="tea-title">📊 教学评一体化监控面板</div>
+    <button class="refresh-btn" onclick="refreshData()">实时刷新学情</button>
+    <div class="stat-box">
+      <div class="stat-item">总答题人数：<span id="totalNum">0</span></div>
+      <div class="stat-item">已提交人数：<span id="submitNum">0</span></div>
+      <div class="stat-item">整体正确率：<span id="rate">0</span>%</div>
+    </div>
+    <div class="stu-list" id="stuList">
+      <div class="stu-row header">
+        <span>学号</span>
+        <span>钟面题1</span>
+        <span>钟面题2</span>
+        <span>钟面题3</span>
+        <span>钟面题4</span>
+        <span>钟面题5</span>
+        <span>钟面题6</span>
+        <span>进率题1</span>
+        <span>进率题2</span>
+        <span>进率题3</span>
+        <span>进率题4</span>
+        <span>进率题5</span>
+        <span>进率题6</span>
+        <span>作答状态</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 钟面绘制 & 时分秒交互 ====================
+const clock = document.getElementById('clock');
+// 刻度
+for(let i=0;i<60;i++){
+  let mark = document.createElement('div');
+  mark.className = 'mark'+(i%5===0?' big':'');
+  mark.style.transform = `rotate(${i*6}deg)`;
+  clock.appendChild(mark);
+}
+// 数字
+const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+for(let i=0;i<12;i++){
+  let num = document.createElement('div');
+  num.className = 'number';
+  num.textContent = nums[i];
+  let deg = i*30-90;
+  let rad = deg*Math.PI/180;
+  let r=190;
+  let x=230 + r*Math.cos(rad)-20;
+  let y=230 + r*Math.sin(rad)-20;
+  num.style.left=x+'px';
+  num.style.top=y+'px';
+  clock.appendChild(num);
+}
+// 分钟标签
+let minLabelList = [];
+for(let i=0;i<60;i++){
+  let label = document.createElement('div');
+  label.className = 'min-label';
+  label.textContent = `(${i}分)`;
+  let deg = i*6-90;
+  let rad = deg*Math.PI/180;
+  let r=160;
+  let x=230 + r*Math.cos(rad);
+  let y=230 + r*Math.sin(rad);
+  label.style.left=x+'px';
+  label.style.top=y+'px';
+  clock.appendChild(label);
+  minLabelList.push(label);
+}
+// 秒针标签
+let secLabelList = [];
+for(let i=0;i<60;i++){
+  let label = document.createElement('div');
+  label.className = 'sec-label';
+  label.textContent = `(${i}秒)`;
+  let deg = i*6-90;
+  let rad = deg*Math.PI/180;
+  let r=130;
+  let x=230 + r*Math.cos(rad);
+  let y=230 + r*Math.sin(rad);
+  label.style.left=x+'px';
+  label.style.top=y+'px';
+  clock.appendChild(label);
+  secLabelList.push(label);
+}
+// 三针
+let hour = document.createElement('div');
+hour.className = 'hand hour';
+clock.appendChild(hour);
+let minute = document.createElement('div');
+minute.className = 'hand minute';
+clock.appendChild(minute);
+let second = document.createElement('div');
+second.className = 'hand second';
+clock.appendChild(second);
+let center = document.createElement('div');
+center.className = 'center';
+clock.appendChild(center);
+
+// 时分秒交互逻辑
+let s=0, m=0, h=0;
+let timer=null;
+let minMarkShow = false;
+let secMarkShow = false;
+
+function updateClock(){
+  second.style.transform = `translateX(-50%) rotate(${s*6}deg)`;
+  minute.style.transform = `translateX(-50%) rotate(${m*6 + s*0.1}deg)`;
+  hour.style.transform = `translateX(-50%) rotate(${h*30 + m*0.5 + s*0.5/60}deg)`;
+  minLabelList.forEach(l=>l.style.display='none');
+  if(minMarkShow) minLabelList[m].style.display='block';
+  secLabelList.forEach(l=>l.style.display='none');
+  if(secMarkShow) secLabelList[s].style.display='block';
+}
+
+// 秒针走1小格
+document.getElementById('stepSec').onclick=()=>{
+  s++;
+  if(s>=60){s=0;m++;}
+  if(m>=60){m=0;h=(h+1)%12;}
+  updateClock();
+};
+// 秒针走1大格
+document.getElementById('stepBigSec').onclick=()=>{
+  s+=5;
+  if(s>=60){s-=60;m++;}
+  updateClock();
+};
+// 分针走1小格
+document.getElementById('stepMin').onclick=()=>{
+  m++;
+  if(m>=60){m=0;h=(h+1)%12;}
+  updateClock();
+};
+// 分针走1大格
+document.getElementById('stepBigMin').onclick=()=>{
+  m+=5;
+  if(m>=60){m-=60;h=(h+1)%12;}
+  updateClock();
+};
+// 秒针走一圈
+document.getElementById('nextSec').onclick=async()=>{
+  for(let i=0;i<60;i++){
+    await new Promise(r=>setTimeout(r,50));
+    s = i+1;
+    if(s>=60) {s=0; m++;}
+    updateClock();
+  }
+};
+// 自动演示
+document.getElementById('auto').onclick=()=>{
+  if(timer){
+    clearInterval(timer); timer=null;
+    document.getElementById('auto').textContent='自动演示';
+  }else{
+    timer=setInterval(()=>{
+      s++;
+      if(s>=60){s=0;m++;}
+      if(m>=60){m=0;h=(h+1)%12;}
+      updateClock();
+    },100);
+    document.getElementById('auto').textContent='暂停';
+  }
+};
+// 重置
+document.getElementById('reset').onclick=()=>{
+  clearInterval(timer); timer=null;
+  s=0; m=0; h=0; updateClock();
+  document.getElementById('auto').textContent='自动演示';
+  document.querySelectorAll('.blank').forEach(b=>b.textContent='');
+  document.getElementById('resultBoard').style.display='none';
+  document.querySelectorAll('input[type="radio"]').forEach(i=>i.checked=false);
+};
+// 显示几分
+document.getElementById('toggleMinMark').onclick=function(){
+  minMarkShow=!minMarkShow;
+  this.textContent=minMarkShow?'隐藏刻度几分':'显示刻度几分';
+  updateClock();
+};
+// 显示几秒
+document.getElementById('toggleSecMark').onclick=function(){
+  secMarkShow=!secMarkShow;
+  this.textContent=secMarkShow?'隐藏刻度几秒':'显示刻度几秒';
+  updateClock();
+};
+
+// ==================== 拖拽功能 ====================
+document.querySelectorAll('.drag-item').forEach(item=>{
+  item.ondragstart=e=>e.dataTransfer.setData('text',item.textContent);
+});
+document.querySelectorAll('.blank').forEach(b=>{
+  b.ondragover=e=>e.preventDefault();
+  b.ondrop=e=>{
+    e.preventDefault();
+    b.textContent = e.dataTransfer.getData('text');
+  };
+});
+
+// ==================== 教学评一体化核心逻辑 ====================
+let allStuData = [];
+
+// 标准答案
+const answer = {
+  q1: "A", q2: "A", q3: "A", q4: "B",
+  q5_1: "分针", q5_2: "秒针", q5_3: "时针",
+  q6_1: "秒针", q6_2: "时针",
+  t1_1: "12", t1_2: "5", t1_3: "60", t1_4: "5", t1_5: "60",
+  t2_1: "1", t2_2: "60", t2_3: "60", t2_4: "60", t2_5: "60",
+  t2_6: "60", t2_7: "60",
+  t3_1: "3", t4_1: "15", t5_1: "15", t6_1: "8:00:00"
+};
+
+// 切换页面
+function showTeacher(){
+  document.getElementById("studentPage").classList.add("hide");
+  document.getElementById("teacherPage").classList.remove("hide");
+  refreshData();
+}
+function showStudent(){
+  document.getElementById("teacherPage").classList.add("hide");
+  document.getElementById("studentPage").classList.remove("hide");
+  updateClock();
+}
+
+// 学生提交
+function stuSubmit(){
+  let sid = document.getElementById("stuId").value.trim();
+  if(!sid){ alert("请输入学号！"); return; }
+
+  let q1 = document.querySelector('input[name="q1"]:checked')?.value || "";
+  let q2 = document.querySelector('input[name="q2"]:checked')?.value || "";
+  let q3 = document.querySelector('input[name="q3"]:checked')?.value || "";
+  let q4 = document.querySelector('input[name="q4"]:checked')?.value || "";
+  let q5_1 = document.getElementById("blank5_1").textContent.trim();
+  let q5_2 = document.getElementById("blank5_2").textContent.trim();
+  let q5_3 = document.getElementById("blank5_3").textContent.trim();
+  let q6_1 = document.getElementById("blank6_1").textContent.trim();
+  let q6_2 = document.getElementById("blank6_2").textContent.trim();
+
+  let t1_1 = document.getElementById("t1_1").textContent.trim();
+  let t1_2 = document.getElementById("t1_2").textContent.trim();
+  let t1_3 = document.getElementById("t1_3").textContent.trim();
+  let t1_4 = document.getElementById("t1_4").textContent.trim();
+  let t1_5 = document.getElementById("t1_5").textContent.trim();
+  let t2_1 = document.getElementById("t2_1").textContent.trim();
+  let t2_2 = document.getElementById("t2_2").textContent.trim();
+  let t2_3 = document.getElementById("t2_3").textContent.trim();
+  let t2_4 = document.getElementById("t2_4").textContent.trim();
+  let t2_5 = document.getElementById("t2_5").textContent.trim();
+  let t2_6 = document.getElementById("t2_6").textContent.trim();
+  let t2_7 = document.getElementById("t2_7").textContent.trim();
+  let t3_1 = document.getElementById("t3_1").textContent.trim();
+  let t4_1 = document.getElementById("t4_1").textContent.trim();
+  let t5_1 = document.getElementById("t5_1").textContent.trim();
+  let t6_1 = document.getElementById("t6_1").textContent.trim();
+
+  let allAnswers = [q1,q2,q3,q4,q5_1,q5_2,q5_3,q6_1,q6_2,
+    t1_1,t1_2,t1_3,t1_4,t1_5,t2_1,t2_2,t2_3,t2_4,t2_5,t2_6,t2_7,
+    t3_1,t4_1,t5_1,t6_1];
+  if(allAnswers.some(a=>!a)){ alert("请完成所有题目！"); return; }
+
+  let res = {
+    q1: q1===answer.q1?"正确":"错误",
+    q2: q2===answer.q2?"正确":"错误",
+    q3: q3===answer.q3?"正确":"错误",
+    q4: q4===answer.q4?"正确":"错误",
+    q5: (q5_1===answer.q5_1&&q5_2===answer.q5_2&&q5_3===answer.q5_3)?"正确":"错误",
+    q6: (q6_1===answer.q6_1&&q6_2===answer.q6_2)?"正确":"错误",
+    t1: (t1_1===answer.t1_1&&t1_2===answer.t1_2&&t1_3===answer.t1_3&&t1_4===answer.t1_4&&t1_5===answer.t1_5)?"正确":"错误",
+    t2: (t2_1===answer.t2_1&&t2_2===answer.t2_2&&t2_3===answer.t2_3&&t2_4===answer.t2_4&&t2_5===answer.t2_5&&t2_6===answer.t2_6&&t2_7===answer.t2_7)?"正确":"错误",
+    t3: t3_1===answer.t3_1?"正确":"错误",
+    t4: t4_1===answer.t4_1?"正确":"错误",
+    t5: t5_1===answer.t5_1?"正确":"错误",
+    t6: t6_1===answer.t6_1?"正确":"错误",
+    status:"已提交"
+  };
+
+  let stuInfo = {id:sid, ...res};
+  let idx = allStuData.findIndex(i=>i.id===sid);
+  if(idx>-1) allStuData[idx] = stuInfo;
+  else allStuData.push(stuInfo);
+
+  document.getElementById("resultBoard").style.display='block';
+  alert("提交成功！");
+}
+
+// 教师刷新
+function refreshData(){
+  let listDom = document.getElementById("stuList");
+  let head = listDom.children[0].outerHTML;
+  listDom.innerHTML = head;
+  let total = allStuData.length;
+  let submitNum = allStuData.filter(s=>s.status==="已提交").length;
+  let rightCount = 0;
+  let totalTopic = 12;
+
+  allStuData.forEach(stu=>{
+    rightCount += Object.values(stu).filter(v=>v==="正确").length;
+    let cls = key => stu[key]==="正确"?"right":(stu[key]==="错误"?"wrong":"wait");
+    listDom.innerHTML += `
+      <div class="stu-row">
+        <span>${stu.id}</span>
+        <span class="${cls('q1')}">${stu.q1||"-"}</span>
+        <span class="${cls('q2')}">${stu.q2||"-"}</span>
+        <span class="${cls('q3')}">${stu.q3||"-"}</span>
+        <span class="${cls('q4')}">${stu.q4||"-"}</span>
+        <span class="${cls('q5')}">${stu.q5||"-"}</span>
+        <span class="${cls('q6')}">${stu.q6||"-"}</span>
+        <span class="${cls('t1')}">${stu.t1||"-"}</span>
+        <span class="${cls('t2')}">${stu.t2||"-"}</span>
+        <span class="${cls('t3')}">${stu.t3||"-"}</span>
+        <span class="${cls('t4')}">${stu.t4||"-"}</span>
+        <span class="${cls('t5')}">${stu.t5||"-"}</span>
+        <span class="${cls('t6')}">${stu.t6||"-"}</span>
+        <span>${stu.status||"未提交"}</span>
+      </div>
+    `;
+  });
+
+  document.getElementById("totalNum").innerText = total;
+  document.getElementById("submitNum").innerText = submitNum;
+  let rate = total===0 ? 0 : Math.round(rightCount/(total*totalTopic)*100);
+  document.getElementById("rate").innerText = rate;
+}
+
+updateClock();
+</script>
+</body>
+</html>
